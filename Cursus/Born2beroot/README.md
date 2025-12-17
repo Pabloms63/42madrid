@@ -1,5 +1,6 @@
+This project has been created as part of the 42 curriculum by pmarcos-
+
 # 💻️🔌️ BORN2BEROOT  
-### por Pablo Marcos Sánchez 
 
 ## 📑 Índice
 1. Descripción del proyecto  
@@ -227,3 +228,58 @@
  Este cambio nos va a permitir que el archivo se muestre de manera automatizada cada 10 minutos.
 
 ---
+
+## ⚖️ Comparaciones 
+
+ - Debian vs Rocky Linux:  
+ 
+	| Aspecto | **Debian** | **Rocky Linux** |
+	|--------|------------|-----------------|
+	| Enfoque | General y estable | Empresarial (compatible RHEL) |
+	| Paquetes | `apt` / `.deb` | `dnf` / `.rpm` |
+	| Soporte | ~5 años | ~10 años |
+	| Actualizaciones | Conservadoras | Muy conservadoras |
+	| Compatibilidad comercial | Media | Alta |
+	| Seguridad | AppArmor | SELinux |
+	| Uso típico | Servidores y uso general | Servidores empresariales |
+
+
+ - AppArmor vs SELinux:
+ 
+	| Aspecto | **AppArmor** | **SELinux** |
+	|--------|--------------|-------------|
+	| Enfoque | Perfiles por aplicación | Políticas basadas en etiquetas |
+	| Complejidad | Baja | Alta |
+	| Facilidad de configuración | Fácil | Difícil |
+	| Modo por defecto | Permisivo / Enforcing | Enforcing |
+	| Granularidad | Media | Muy alta |
+	| Aprendizaje | Rápido | Curva pronunciada |
+	| Integración | Debian, Ubuntu | RHEL, Rocky, Alma |
+	| Uso típico | Servidores simples | Entornos empresariales |
+
+ 
+ - UFW vs firewalld:
+ 
+ 	| Aspecto | **UFW** | **firewalld** |
+	|--------|--------|---------------|
+	| Enfoque | Simple y declarativo | Dinámico y por zonas |
+	| Facilidad de uso | Muy fácil | Media |
+	| Configuración | Comandos simples | Zonas y servicios |
+	| Cambios en caliente | No | Sí |
+	| Integración | Debian, Ubuntu | RHEL, Rocky, Alma |
+	| Backend | iptables / nftables | nftables |
+	| Uso típico | Servidores pequeños | Servidores empresariales |
+
+ 
+ - VirtualBox vs UTM:
+ 
+ 	| Aspecto | **VirtualBox** | **UTM** |
+	|--------|---------------|---------|
+	| Plataforma | Multiplataforma | macOS |
+	| Arquitectura | x86 (principalmente) | x86 y ARM |
+	| Backend | Virtualización nativa | QEMU + Apple Hypervisor |
+	| Facilidad de uso | Media | Muy fácil |
+	| Rendimiento | Bueno | Muy bueno en Apple Silicon |
+	| Licencia | GPL (base) | Open Source |
+	| Uso típico | PCs y servidores | Macs (especialmente M1/M2) |
+	
