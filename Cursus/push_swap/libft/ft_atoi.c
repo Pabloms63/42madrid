@@ -1,46 +1,43 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   push_swap.c                                        :+:      :+:    :+:   */
+/*   ft_atoi.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: pmarcos- <pmarcos-@student.42madrid.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/12/22 17:35:25 by pmarcos-          #+#    #+#             */
-/*   Updated: 2025/12/29 18:33:42 by pmarcos-         ###   ########.fr       */
+/*   Created: 2025/09/30 16:38:59 by pmarcos-          #+#    #+#             */
+/*   Updated: 2025/12/29 18:23:52 by pmarcos-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "push_swap.h"
 
-int	ft_is_number(char *str)
+/**
+ * @brief Convierte un string de caracters a entero.
+ * @param nptr El string de caracteres
+ * @return El entero resultante.
+ */
+int	ft_atoi(const char *nptr)
 {
-	int	count;
+	int		count;
+	int		sign;
+	int		res;
 
+	res = 0;
 	count = 0;
-	if (str[count] == '-' || str[count] == '+')
+	sign = 1;
+	while ((nptr[count] == 32) || (nptr[count] >= 9 && nptr[count] <= 13))
 		count++;
-	if (!str[count])
-		return (0);
-	while (str[count] != '\0')
+	if (nptr[count] == '-' || nptr[count] == '+')
 	{
-		if (str[count] < '0' || str[count] > '9')
-			return (0);
+		if (nptr[count] == '-')
+			sign = -1;
 		count++;
 	}
-	return (1);
-}
-
-int	main(int argc, char	*argv[])
-{
-	int	count;
-
-	count = 1;
-	if (argc <= 1)
-		return (ft_printf("No hay argumentos"), 0);
-	while (count < argc)
+	while (nptr[count] >= '0' && nptr[count] <= '9')
 	{
-		if (!ft_is_number(argv[count]))
-			return (ft_printf("El argumento debe ser un número"), 0);
+		res = res * 10 + (nptr[count] - '0');
 		count++;
 	}
+	return (res * sign);
 }
