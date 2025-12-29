@@ -4,10 +4,19 @@
 ---
 
 # En este repositorio se irán subiendo todos los proyectos de 42madrid.
+## Explicación introductoria del contenido de las carpetas
+- 🏫 Cursus:
+  La más importante, dónde se encuentran todos los proyectos importantes del curso.
+- 🏊 Piscina:
+  Aquí estas ubicados todos los proyectos básicos e introducción a C vistos en la piscina.
+- 🧪 Pruebas:
+  Como indica el nombre en esa carpeta voy subiendo pruebillas acerca de dudas que me van surgiendo.
 
 ---
 
 # Indice
+Dentro de Cursus se encuentran estos contenidos:
+
 1. Milestone0
 2. Milestone1
 3. Milestone2
@@ -16,14 +25,6 @@
 6. Milestone5
 
 ---
-
-# Explicación del contenido de las carpetas
-- 🏫 Cursus:
-  La más importante, dónde se encuentran todos los proyectos importantes del curso.
-- 🏊 Piscina:
-  Aquí estas ubicados todos los proyectos básicos e introducción a C vistos en la piscina.
-- 🧪 Pruebas:
-  COmo indica el nombre en esa carpeta voy subiendo pruebillas acerca de dudas que me van surgiendo.
 
 # Milestone0
 1. 📚 Libft:
