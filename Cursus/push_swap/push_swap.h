@@ -6,7 +6,7 @@
 /*   By: pmarcos- <pmarcos-@student.42madrid.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/22 17:48:03 by pmarcos-          #+#    #+#             */
-/*   Updated: 2025/12/29 18:32:59 by pmarcos-         ###   ########.fr       */
+/*   Updated: 2025/12/29 19:27:43 by pmarcos-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,7 @@
 # include <stdint.h>
 # include <stddef.h>
 # include <stdlib.h>
+# include <limits.h>
 
 typedef struct s_list
 {
