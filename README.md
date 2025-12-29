@@ -17,6 +17,14 @@
 
 ---
 
+# Explicación del contenido de las carpetas
+- 🏫 Cursus:
+  La más importante, dónde se encuentran todos los proyectos importantes del curso.
+- 🏊 Piscina:
+  Aquí estas ubicados todos los proyectos básicos e introducción a C vistos en la piscina.
+- 🧪 Pruebas:
+  COmo indica el nombre en esa carpeta voy subiendo pruebillas acerca de dudas que me van surgiendo.
+
 # Milestone0
 1. 📚 Libft:
    Este proyecto consiste en relizar una librería con muchas de las clases que utilizaremos durante el CURSUS.
