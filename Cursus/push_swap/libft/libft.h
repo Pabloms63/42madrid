@@ -6,10 +6,9 @@
 /*   By: pmarcos- <pmarcos-@student.42madrid.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/17 20:55:36 by pmarcos-          #+#    #+#             */
-/*   Updated: 2026/01/05 20:09:29 by pmarcos-         ###   ########.fr       */
+/*   Updated: 2026/01/05 21:58:19 by pmarcos-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
-
 
 #ifndef LIBFT_H
 # define LIBFT_H

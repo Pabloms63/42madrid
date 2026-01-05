@@ -6,7 +6,7 @@
 /*   By: pmarcos- <pmarcos-@student.42madrid.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/20 21:06:00 by pmarcos-          #+#    #+#             */
-/*   Updated: 2025/10/20 21:17:26 by pmarcos-         ###   ########.fr       */
+/*   Updated: 2026/01/05 22:12:28 by pmarcos-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,6 @@ t_list	*ft_lstmap(t_list *lst, void *(*f)(void *), void (*del)(void *))
 
 	if (!lst || !f)
 		return (NULL);
-
 	new_list = NULL;
 	while (lst != NULL)
 	{
