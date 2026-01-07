@@ -6,7 +6,7 @@
 /*   By: pmarcos- <pmarcos-@student.42madrid.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/22 17:35:25 by pmarcos-          #+#    #+#             */
-/*   Updated: 2026/01/05 22:15:59 by pmarcos-         ###   ########.fr       */
+/*   Updated: 2026/01/07 23:17:42 by pmarcos-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,6 +31,24 @@ static void	add_args_pila_a(t_list **a, int argc, char *argv[])
 	}
 }
 
+static int	is_sorted(t_list *a)
+{
+	int	current;
+	int	next;
+
+	if (!a || !a -> next)
+		return (1);
+	while (a -> next)
+	{
+		current = *(int *)a -> content;
+		next = *(int *)a -> next -> content;
+		if (current > next)
+			return (0);
+		a = a -> next;
+	}
+	return (1);
+}
+
 int	main(int argc, char	*argv[])
 {
 	t_list	*a;
@@ -42,6 +60,11 @@ int	main(int argc, char	*argv[])
 		return (1);
 	}
 	add_args_pila_a(&a, argc, argv);
+	if (is_sorted(a))
+	{
+		ft_lstclear(&a, free);
+		return (0);
+	}
 	ft_lstclear(&a, free);
 	return (0);
 }
