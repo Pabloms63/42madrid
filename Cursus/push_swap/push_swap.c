@@ -6,7 +6,7 @@
 /*   By: pmarcos- <pmarcos-@student.42madrid.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/22 17:35:25 by pmarcos-          #+#    #+#             */
-/*   Updated: 2026/01/07 23:59:32 by pmarcos-         ###   ########.fr       */
+/*   Updated: 2026/01/08 19:07:22 by pmarcos-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,11 +31,7 @@ static void	add_args_pila_a(t_list **a, int argc, char *argv[])
 	}
 }
 
-static int	is_sorted(t_list *a)
-{
-}
-
-static void	sort_nums(t_list *a)
+static int	sort_nums(t_list *a)
 {
 	int	current;
 	int	next;
@@ -50,19 +46,26 @@ static void	sort_nums(t_list *a)
 			return (0);
 		a = a -> next;
 	}
+	return (1);
 }
 
 int	main(int argc, char	*argv[])
 {
-	t_list	*a = NULL;
-	t_list	*b = NULL;
+	t_list	*a;
+	t_list	*b;
 
+	a = NULL;
+	b = NULL;
 	if (!parse_args(argc, argv))
 	{
 		ft_printf("\nError\n");
 		return (1);
 	}
+	if (!sort_nums(a))
+		ft_printf("No está ordenado");
 	add_args_pila_a(&a, argc, argv);
+	ra(&a);
+	rb(&b);
 	ft_lstclear(&a, free);
 	return (0);
 }
