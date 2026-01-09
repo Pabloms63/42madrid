@@ -6,7 +6,7 @@
 /*   By: pmarcos- <pmarcos-@student.42madrid.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/22 17:48:03 by pmarcos-          #+#    #+#             */
-/*   Updated: 2026/01/08 21:04:22 by pmarcos-         ###   ########.fr       */
+/*   Updated: 2026/01/09 20:10:24 by pmarcos-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,6 +37,6 @@ void	rb(t_list **b);
 void	sb(t_list **b);
 
 //Operaciones de ambas pilas
-void ss(t_list **a, t_list *b);
+void	ss(t_list **a, t_list *b);
 
 #endif
