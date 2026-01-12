@@ -6,7 +6,7 @@
 /*   By: pmarcos- <pmarcos-@student.42madrid.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/05 19:37:46 by pmarcos-          #+#    #+#             */
-/*   Updated: 2026/01/05 21:58:37 by pmarcos-         ###   ########.fr       */
+/*   Updated: 2026/01/12 21:50:26 by pmarcos-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,29 +78,38 @@ long	ft_atol(char *str)
 
 int	parse_args(int argc, char *argv[])
 {
-	int		count;
-	long	res;
 	long	*nums;
-	size_t	filled;
+	size_t	size;
+	size_t	i;
 
-	count = 1;
-	filled = 0;
 	if (argc <= 1)
-		return (ft_printf("No hay argumentos"), 0);
-	nums = malloc((argc - 1) * sizeof(*nums));
-	if (!nums)
-		return (ft_printf("Error de memoria\n"), 0);
-	while (count < argc)
+		return (0);
+	if (has_quotes(argc, argv))
 	{
-		if (!ft_is_number(argv[count]))
-			return (free(nums), ft_printf("Debe ser un número válido"), 0);
-		res = ft_atol(argv[count]);
-		nums[filled++] = res;
-		if (ft_is_duplicate_number(nums, filled))
-			return (free(nums), ft_printf("No pueden estar repetidos"), 0);
-		ft_printf("%d\n", res);
-		count++;
+		nums = nums_with_quotes(argv[1], &size);
+		if (!nums)
+			return (0);
 	}
+	else
+	{
+		size = argc - 1;
+		nums = malloc(sizeof(long) * size);
+		if (!nums)
+			return (0);
+		i = 0;
+		while (i < size)
+		{
+			if (!ft_is_number(argv[i + 1]))
+				return (free(nums), 0);
+			nums[i] = ft_atol(argv[i + 1]);
+			if (nums[i] == LONG_MAX)
+				return (free(nums), 0);
+
+			i++;
+		}
+	}
+	if (ft_is_duplicate_number(nums, size))
+		return (free(nums), 0);
 	free(nums);
 	return (1);
 }
