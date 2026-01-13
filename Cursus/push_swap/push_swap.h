@@ -6,7 +6,7 @@
 /*   By: pmarcos- <pmarcos-@student.42madrid.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/22 17:48:03 by pmarcos-          #+#    #+#             */
-/*   Updated: 2026/01/09 20:10:24 by pmarcos-         ###   ########.fr       */
+/*   Updated: 2026/01/13 20:04:30 by pmarcos-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,10 +23,14 @@
 # include <limits.h>
 
 //Validaciones
-size_t	ft_is_number(char *str);
-size_t	ft_is_duplicate_number(long *num, size_t size);
+int		ft_is_number(char *str);
+int		ft_is_duplicate_number(long *num, size_t size);
 long	ft_atol(char *str);
-int		parse_args(int argc, char *argv[]);
+int		parse_args(int argc, char **argv, long **out, size_t *size);
+int		split_len(char **str);
+void	free_split(char **split);
+int		has_quotes(int argc, char *argv[]);
+long	*nums_with_quotes(char *arg, size_t *len);
 
 //Operaciones de pila A
 void	ra(t_list **a);

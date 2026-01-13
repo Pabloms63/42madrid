@@ -6,12 +6,15 @@
 /*   By: pmarcos- <pmarcos-@student.42madrid.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/12 20:53:02 by pmarcos-          #+#    #+#             */
-/*   Updated: 2026/01/12 21:53:55 by pmarcos-         ###   ########.fr       */
+/*   Updated: 2026/01/13 20:00:42 by pmarcos-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "push_swap.h"
 
+/**
+ * @brief Returns the length of the string to split.
+ */
 int	split_len(char **str)
 {
 	int	cnt;
@@ -22,6 +25,9 @@ int	split_len(char **str)
 	return (cnt);
 }
 
+/**
+ * @brief Free all the split.
+ */
 void	free_split(char **split)
 {
 	int	a;
@@ -32,6 +38,9 @@ void	free_split(char **split)
 	free(split);
 }
 
+/**
+ * @brief Chech if the arguments have quotes.
+ */
 int	has_quotes(int argc, char *argv[])
 {
 	int		cnt;
@@ -55,15 +64,15 @@ long	*nums_with_quotes(char *arg, size_t *len)
 	split = ft_split(arg, ' ');
 	if (!split)
 		return (NULL);
-
 	*len = split_len(split);
 	nums = malloc(sizeof(long) * (*len));
 	if (!nums)
-		return (NULL);
+		return (free_split(split), NULL);
 
 	i = 0;
 	while (split[i])
 	{
+		ft_printf("%s\n", split[i]);
 		if (!ft_is_number(split[i]))
 			return (free_split(split), free(nums), NULL);
 		nums[i] = ft_atol(split[i]);
