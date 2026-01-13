@@ -6,13 +6,13 @@
 /*   By: pmarcos- <pmarcos-@student.42madrid.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/22 17:35:25 by pmarcos-          #+#    #+#             */
-/*   Updated: 2026/01/13 20:26:06 by pmarcos-         ###   ########.fr       */
+/*   Updated: 2026/01/13 21:04:30 by pmarcos-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "push_swap.h"
 
-static void	add_nums_to_stack(t_list **a, long *nums, size_t size)
+static void	add_nums_to_stack_a(t_list **a, long *nums, size_t size)
 {
 	size_t	i;
 	int		*value;
@@ -31,6 +31,18 @@ static void	add_nums_to_stack(t_list **a, long *nums, size_t size)
 	}
 }
 
+static void	create_stack_b(t_list **b)
+{
+	t_list	*new;
+	int		*value;
+
+	(void)b;
+	value = malloc(sizeof(int));
+	if (!value)
+		return ;
+	new = ft_lstnew(value);
+}
+
 static int	sort_nums(t_list *a)
 {
 	int	current;
@@ -43,26 +55,36 @@ static int	sort_nums(t_list *a)
 		current = *(int *)a -> content;
 		next = *(int *)a -> next -> content;
 		if (current > next)
-			return (1);
+			return (0);
 		a = a -> next;
 	}
-	return (0);
+	return (1);
+}
+
+static void	push_swap(t_list **a, t_list **b, size_t size)
+{
+	(void)b;
+	if (size == 2)
+		sort_two(a);
 }
 
 int	main(int argc, char **argv)
 {
 	t_list	*a;
+	t_list	*b;
 	long	*nums;
 	size_t	size;
 
 	a = NULL;
+	b = NULL;
+	create_stack_b(&b);
 	if (parse_args(argc, argv, &nums, &size))
 		return (write(2, "Error\n", 6), 1);
-	add_nums_to_stack(&a, nums, size);
+	add_nums_to_stack_a(&a, nums, size);
 	free(nums);
-	if (!sort_nums(a))
+	push_swap(&a, &b, argc);
+	if (sort_nums(a))
 		return (ft_lstclear(&a, free), ft_printf("No está ordenado"), 0);
 	ft_lstclear(&a, free);
 	return (0);
 }
-

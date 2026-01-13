@@ -6,7 +6,7 @@
 /*   By: pmarcos- <pmarcos-@student.42madrid.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/22 17:48:03 by pmarcos-          #+#    #+#             */
-/*   Updated: 2026/01/13 20:27:57 by pmarcos-         ###   ########.fr       */
+/*   Updated: 2026/01/13 20:54:58 by pmarcos-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,6 +30,9 @@ int		parse_args(int argc, char **argv, long **out, size_t *size);
 int		split_len(char **str);
 void	free_split(char **split);
 char	*join_args(int argc, char **argv);
+
+//Sorting
+void	sort_two(t_list **a);
 
 //Operaciones de pila A
 void	ra(t_list **a);
