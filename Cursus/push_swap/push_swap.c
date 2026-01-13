@@ -6,7 +6,7 @@
 /*   By: pmarcos- <pmarcos-@student.42madrid.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/22 17:35:25 by pmarcos-          #+#    #+#             */
-/*   Updated: 2026/01/13 20:09:35 by pmarcos-         ###   ########.fr       */
+/*   Updated: 2026/01/13 20:26:06 by pmarcos-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,10 +43,10 @@ static int	sort_nums(t_list *a)
 		current = *(int *)a -> content;
 		next = *(int *)a -> next -> content;
 		if (current > next)
-			return (0);
+			return (1);
 		a = a -> next;
 	}
-	return (1);
+	return (0);
 }
 
 int	main(int argc, char **argv)
@@ -60,8 +60,8 @@ int	main(int argc, char **argv)
 		return (write(2, "Error\n", 6), 1);
 	add_nums_to_stack(&a, nums, size);
 	free(nums);
-	if (sort_nums(a))
-		return (ft_lstclear(&a, free), 0);
+	if (!sort_nums(a))
+		return (ft_lstclear(&a, free), ft_printf("No está ordenado"), 0);
 	ft_lstclear(&a, free);
 	return (0);
 }

@@ -6,7 +6,7 @@
 /*   By: pmarcos- <pmarcos-@student.42madrid.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/05 19:37:46 by pmarcos-          #+#    #+#             */
-/*   Updated: 2026/01/13 20:12:39 by pmarcos-         ###   ########.fr       */
+/*   Updated: 2026/01/13 20:34:48 by pmarcos-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -87,14 +87,12 @@ long	ft_atol(char *str)
 
 char	*join_args(int argc, char **argv)
 {
-	char	*res; 
+	char	*res;
 	char	*tmp;
 	int		i;
 
 	i = 1;
 	res = ft_strdup("");
-	if (!res)
-		return (NULL);
 	while (i < argc)
 	{
 		tmp = ft_strjoin(res, argv[i]);
@@ -142,15 +140,15 @@ int	parse_args(int argc, char **argv, long **out, size_t *size)
 	while (i < *size)
 	{
 		if (!ft_is_number(split[i]))
-			return (free_split(split), free(nums), 1);
+			return (free_split(split), free(nums), ft_printf("No es númerico\n"), 1);
 		nums[i] = ft_atol(split[i]);
 		if (nums[i] == LONG_MAX)
-			return (free_split(split), free(nums), 1);
+			return (free_split(split), free(nums), ft_printf("Overflow\n"), 1);
 		i++;
 	}
 	free_split(split);
 	if (ft_is_duplicate_number(nums, *size))
-		return (free(nums), 1);
+		return (free(nums), ft_printf("Hay números duplicados\n"), 1);
 	*out = nums;
 	return (0);
 }
