@@ -6,7 +6,7 @@
 /*   By: pmarcos- <pmarcos-@student.42madrid.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/08 19:33:14 by pmarcos-          #+#    #+#             */
-/*   Updated: 2026/01/13 19:15:20 by pmarcos-         ###   ########.fr       */
+/*   Updated: 2026/01/16 19:03:45 by pmarcos-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,7 @@ void ss(t_list **a, t_list *b)
 {
 	sa(a);
 	sb(b);
+	ft_printf("ss\n");
 }
 
 /**
@@ -28,6 +29,7 @@ void rr(t_list **a, t_list **b)
 {
 	ra(a);
 	rb(b);
+	ft_printf("rr\n");
 }
 
 /**
@@ -37,4 +39,5 @@ void rrr(t_list **a, t_list **b)
 {
 	rra(a);
 	rrb(b);
+	ft_printf("rrr\n");
 }

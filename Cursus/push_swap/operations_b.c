@@ -6,7 +6,7 @@
 /*   By: pmarcos- <pmarcos-@student.42madrid.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/08 19:12:43 by pmarcos-          #+#    #+#             */
-/*   Updated: 2026/01/13 19:42:51 by pmarcos-         ###   ########.fr       */
+/*   Updated: 2026/01/16 19:08:29 by pmarcos-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,6 +27,7 @@ void	sb(t_list **b)
 	first -> next = second -> next;
 	second -> next = first;
 	*b = second;
+	ft_printf("sb\n");
 }
 
 /**
@@ -42,6 +43,7 @@ void	pb(t_list **a, t_list **b)
 	*a = first_a -> next;
 	first_a -> next = *b;
 	*b = first_a;
+	ft_printf("pb\n");
 }
 
 /**

@@ -6,7 +6,7 @@
 /*   By: pmarcos- <pmarcos-@student.42madrid.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/22 17:48:03 by pmarcos-          #+#    #+#             */
-/*   Updated: 2026/01/13 20:54:58 by pmarcos-         ###   ########.fr       */
+/*   Updated: 2026/01/16 20:07:44 by pmarcos-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,16 +33,23 @@ char	*join_args(int argc, char **argv);
 
 //Sorting
 void	sort_two(t_list **a);
+void	sort_three(t_list **a);
 
 //Operaciones de pila A
 void	ra(t_list **a);
+void	pa(t_list **a, t_list **b);
 void	sa(t_list **a);
+void	rra(t_list **a);
 
 //Operaciones de pila B
 void	rb(t_list **b);
+void	pb(t_list **a, t_list **b);
 void	sb(t_list **b);
+void	rrb(t_list **b);
 
 //Operaciones de ambas pilas
 void	ss(t_list **a, t_list *b);
+void	rr(t_list **a, t_list **b);
+void	rrr(t_list **a, t_list **b);
 
 #endif
