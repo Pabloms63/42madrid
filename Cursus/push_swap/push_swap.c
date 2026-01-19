@@ -6,7 +6,7 @@
 /*   By: pmarcos- <pmarcos-@student.42madrid.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/22 17:35:25 by pmarcos-          #+#    #+#             */
-/*   Updated: 2026/01/16 20:06:10 by pmarcos-         ###   ########.fr       */
+/*   Updated: 2026/01/19 18:57:21 by pmarcos-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,8 +54,10 @@ static void	push_swap(t_list **a, t_list **b, size_t size)
 	(void)b;
 	if (size == 2)
 		sort_two(a);
-	if (size == 3)
+	else if (size == 3)
 		sort_three(a);
+	else if (size == 4 || size == 5)
+		sort_five(a);
 }
 
 int	main(int argc, char **argv)
