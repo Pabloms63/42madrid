@@ -6,7 +6,7 @@
 /*   By: pmarcos- <pmarcos-@student.42madrid.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/17 20:55:36 by pmarcos-          #+#    #+#             */
-/*   Updated: 2026/01/05 21:58:19 by pmarcos-         ###   ########.fr       */
+/*   Updated: 2026/01/20 20:57:13 by pmarcos-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,6 +20,7 @@
 typedef struct s_list
 {
 	void			*content;
+	//int				index;
 	struct s_list	*next;
 }	t_list;
 

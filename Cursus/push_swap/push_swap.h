@@ -6,7 +6,7 @@
 /*   By: pmarcos- <pmarcos-@student.42madrid.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/22 17:48:03 by pmarcos-          #+#    #+#             */
-/*   Updated: 2026/01/19 18:58:21 by pmarcos-         ###   ########.fr       */
+/*   Updated: 2026/01/20 20:42:17 by pmarcos-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,6 +36,11 @@ void	sort_two(t_list **a);
 void	sort_three(t_list **a);
 void	sort_five(t_list **a);
 void	push_smallest_to_b(t_list **a, t_list **b);
+
+//Radix
+void	radix(t_list **a, t_list **b);
+int		get_max_bits(int size);
+void	assign_index(t_list **a);
 
 //Operaciones de pila A
 void	ra(t_list **a);

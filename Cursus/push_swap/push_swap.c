@@ -6,7 +6,7 @@
 /*   By: pmarcos- <pmarcos-@student.42madrid.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/22 17:35:25 by pmarcos-          #+#    #+#             */
-/*   Updated: 2026/01/19 18:57:21 by pmarcos-         ###   ########.fr       */
+/*   Updated: 2026/01/20 21:20:38 by pmarcos-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,6 +58,11 @@ static void	push_swap(t_list **a, t_list **b, size_t size)
 		sort_three(a);
 	else if (size == 4 || size == 5)
 		sort_five(a);
+	else if (size > 5)
+	{
+		//assign_index(a);
+		radix(a, b);
+	}
 }
 
 int	main(int argc, char **argv)
@@ -76,6 +81,8 @@ int	main(int argc, char **argv)
 	push_swap(&a, &b, size);
 	if (!sort_nums(a))
 		return (ft_lstclear(&a, free), ft_printf("No está ordenado\n"), 0);
+	else
+		ft_printf("Ya está ordenado");
 	ft_lstclear(&a, free);
 	return (0);
 }
