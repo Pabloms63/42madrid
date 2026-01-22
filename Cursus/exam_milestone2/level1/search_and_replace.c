@@ -1,46 +1,36 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   repeat_alpha.c                                     :+:      :+:    :+:   */
+/*   search_and_replace.c                               :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: pmarcos- <pmarcos-@student.42madrid.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/01/22 01:00:04 by pmarcos-          #+#    #+#             */
-/*   Updated: 2026/01/22 19:13:56 by pmarcos-         ###   ########.fr       */
+/*   Created: 2026/01/22 20:04:08 by pmarcos-          #+#    #+#             */
+/*   Updated: 2026/01/22 20:45:07 by pmarcos-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "unistd.h"
 
-int	repeat_alpha(char letter)
-{
-	if (letter >= 'a' && letter <= 'z')
-		return (letter - 'a' + 1);
-	else if (letter >= 'A' && letter <= 'Z')
-		return (letter - 'A' + 1);
-	return (1);
-}
-
 int	main(int argc, char **argv)
 {
-	int	cnt;
-	int	num;
+	char	word1;
+	char	word2;
+	int		cnt;
 
 	cnt = 0;
-	num = 0;
-	if (argc == 2)
+	if (argc == 4 && argv[2][1] == '\0' && argv[3][1] == '\0')
 	{
+		word1 = argv[2][0];
+		word2 = argv[3][0];
 		while (argv[1][cnt] != '\0')
 		{
-			num = repeat_alpha(argv[1][cnt]);
-			while (num > 0)
-			{
-				write(1, &argv[1][cnt], 1);
-				num--;
-			}
+			if (argv[1][cnt] == word1)
+				argv[1][cnt] = word2;
+			write(1, &argv[1][cnt], 1);
 			cnt++;
 		}
 	}
 	else
-		write(1, "\n", 1);
+		write (1, "\n", 1);
 }
