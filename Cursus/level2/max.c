@@ -1,32 +1,43 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_is_power_2.c                                    :+:      :+:    :+:   */
+/*   max.c                                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: pmarcos- <pmarcos-@student.42madrid.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/01/28 02:29:14 by pmarcos-          #+#    #+#             */
-/*   Updated: 2026/01/28 17:00:25 by pmarcos-         ###   ########.fr       */
+/*   Created: 2026/01/28 17:39:43 by pmarcos-          #+#    #+#             */
+/*   Updated: 2026/01/28 17:49:23 by pmarcos-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <stdio.h>
 
-int	is_power_of_2(unsigned int n)
+int	max(int *tab, unsigned int len)
 {
-	if (n == 0)
-		return (0);
-	while (n > 1)
+	int	num;
+	int	cnt;
+
+	cnt = 0;
+	num = tab[0];
+	while (cnt < len)
 	{
-		if (n % 2 != 0)
-			return (0);
-		n = n / 2;
+		if (tab[cnt] > num)
+			num = tab[cnt];
+		cnt++;
 	}
-	return (1);
+	return (num);
 }
 
 int	main(void)
 {
-	printf("%d\n", is_power_of_2(32));
+	int	nums[6] = {0, 1, 2, 3, 4, -5};
+	int cnt = 0;
+
+	while (cnt < 6)
+	{
+		printf("%d\n", nums[cnt]);
+		cnt++;
+	}
+	printf("%d\n", max(nums, 6));
 	return (0);
 }

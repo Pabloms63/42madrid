@@ -1,32 +1,34 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_is_power_2.c                                    :+:      :+:    :+:   */
+/*   print_bits.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: pmarcos- <pmarcos-@student.42madrid.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/01/28 02:29:14 by pmarcos-          #+#    #+#             */
-/*   Updated: 2026/01/28 17:00:25 by pmarcos-         ###   ########.fr       */
+/*   Created: 2026/01/28 17:49:48 by pmarcos-          #+#    #+#             */
+/*   Updated: 2026/01/28 20:49:01 by pmarcos-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <stdio.h>
+#include <unistd.h>
 
-int	is_power_of_2(unsigned int n)
+void	print_bits(unsigned char octet)
 {
-	if (n == 0)
-		return (0);
-	while (n > 1)
+	int		cnt;
+	char	bit;
+
+	cnt = 7;
+	while (cnt >= 0)
 	{
-		if (n % 2 != 0)
-			return (0);
-		n = n / 2;
+		bit = ((octet >> cnt) & 1) + '0';
+		write (1, &bit, 1);
+		cnt--;
 	}
-	return (1);
 }
 
 int	main(void)
 {
-	printf("%d\n", is_power_of_2(32));
+	print_bits('c');
+	write(1, "\n", 1);
 	return (0);
 }

@@ -1,32 +1,36 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_is_power_2.c                                    :+:      :+:    :+:   */
+/*   snake_to_camel.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: pmarcos- <pmarcos-@student.42madrid.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/01/28 02:29:14 by pmarcos-          #+#    #+#             */
-/*   Updated: 2026/01/28 17:00:25 by pmarcos-         ###   ########.fr       */
+/*   Created: 2026/01/28 18:54:43 by pmarcos-          #+#    #+#             */
+/*   Updated: 2026/01/28 19:08:11 by pmarcos-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <stdio.h>
+#include <unistd.h>
 
-int	is_power_of_2(unsigned int n)
+int	main(int argc, char **argv)
 {
-	if (n == 0)
-		return (0);
-	while (n > 1)
+	int		cnt;
+	char	letter;
+
+	cnt = 0;
+	if (argc == 2)
 	{
-		if (n % 2 != 0)
-			return (0);
-		n = n / 2;
+		while (argv[1][cnt] != '\0')
+		{
+			if (argv[1][cnt] == '_')
+			{
+				cnt++;
+				letter = argv[1][cnt] - 32;
+				write(1, &letter, 1);
+			}
+			else
+				write (1, &argv[1][cnt], 1);
+			cnt++;
+		}
 	}
-	return (1);
-}
-
-int	main(void)
-{
-	printf("%d\n", is_power_of_2(32));
-	return (0);
 }
