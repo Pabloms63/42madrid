@@ -6,7 +6,7 @@
 /*   By: pmarcos- <pmarcos-@student.42madrid.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/22 17:48:03 by pmarcos-          #+#    #+#             */
-/*   Updated: 2026/01/20 20:42:17 by pmarcos-         ###   ########.fr       */
+/*   Updated: 2026/01/29 14:08:58 by pmarcos-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,9 +24,9 @@
 
 //Validaciones
 int		ft_is_number(char *str);
-int		ft_is_duplicate_number(long *num, size_t size);
-long	ft_atol(char *str);
-int		parse_args(int argc, char **argv, long **out, size_t *size);
+int		ft_is_duplicate_number(int *num, size_t size);
+int		ft_atoi2(char *str);
+int		parse_args(int argc, char **argv, int **out, size_t *size);
 int		split_len(char **str);
 void	free_split(char **split);
 char	*join_args(int argc, char **argv);
@@ -36,11 +36,12 @@ void	sort_two(t_list **a);
 void	sort_three(t_list **a);
 void	sort_five(t_list **a);
 void	push_smallest_to_b(t_list **a, t_list **b);
+void	radix_sort(t_list **a, int *nums, size_t size);
 
-//Radix
-void	radix(t_list **a, t_list **b);
-int		get_max_bits(int size);
-void	assign_index(t_list **a);
+//Indexing
+void	sort_array(int *arr, size_t size);
+int		get_index(int *arr, size_t size, int value);
+int		max_bits(size_t size);
 
 //Operaciones de pila A
 void	ra(t_list **a);

@@ -6,7 +6,7 @@
 /*   By: pmarcos- <pmarcos-@student.42madrid.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/05 19:37:46 by pmarcos-          #+#    #+#             */
-/*   Updated: 2026/01/20 21:20:36 by pmarcos-         ###   ########.fr       */
+/*   Updated: 2026/01/29 14:09:46 by pmarcos-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,7 +36,7 @@ int	ft_is_number(char *str)
 /**
  * @brief Check that no number is duplicated.
  */
-int	ft_is_duplicate_number(long *num, size_t size)
+int	ft_is_duplicate_number(int *num, size_t size)
 {
 	size_t	a;
 	size_t	b;
@@ -59,9 +59,9 @@ int	ft_is_duplicate_number(long *num, size_t size)
 /**
  * @brief Convert each character to long.
  */
-long	ft_atol(char *str)
+int	ft_atoi2(char *str)
 {
-	long	res;
+	int		res;
 	size_t	count;
 	int		sign;
 
@@ -79,7 +79,7 @@ long	ft_atol(char *str)
 		if (str[count] >= '0' && str[count] <= '9')
 			res = res * 10 + (str[count] - '0');
 		if (res * sign > INT_MAX || res * sign < INT_MIN)
-			return (LONG_MAX);
+			return (INT_MAX);
 		count++;
 	}
 	return (res * sign);
@@ -116,11 +116,11 @@ char	*join_args(int argc, char **argv)
 /**
  * @brief Check all validations
  */
-int	parse_args(int argc, char **argv, long **out, size_t *size)
+int	parse_args(int argc, char **argv, int **out, size_t *size)
 {
 	char	*joined;
 	char	**split;
-	long	*nums;
+	int		*nums;
 	size_t	i;
 
 	if (argc < 2)
@@ -133,7 +133,7 @@ int	parse_args(int argc, char **argv, long **out, size_t *size)
 	if (!split || !split[0])
 		return (1);
 	*size = split_len(split);
-	nums = malloc(sizeof(long) * (*size));
+	nums = malloc(sizeof(int) * (*size));
 	if (!nums)
 		return (free_split(split), 1);
 	i = 0;
@@ -141,8 +141,8 @@ int	parse_args(int argc, char **argv, long **out, size_t *size)
 	{
 		if (!ft_is_number(split[i]))
 			return (free_split(split), free(nums), ft_printf("No es númerico\n"), 1);
-		nums[i] = ft_atol(split[i]);
-		if (nums[i] == LONG_MAX)
+		nums[i] = ft_atoi2(split[i]);
+		if (nums[i] == INT_MAX)
 			return (free_split(split), free(nums), ft_printf("Overflow\n"), 1);
 		i++;
 	}

@@ -6,7 +6,7 @@
 /*   By: pmarcos- <pmarcos-@student.42madrid.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/13 20:42:24 by pmarcos-          #+#    #+#             */
-/*   Updated: 2026/01/19 18:54:57 by pmarcos-         ###   ########.fr       */
+/*   Updated: 2026/01/29 13:57:22 by pmarcos-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -104,5 +104,36 @@ void	sort_five(t_list **a)
 			sb(&b);
 		pa(a, &b);
 		pa(a, &b);
+	}
+}
+
+void	radix_sort(t_list **a, int *nums, size_t size)
+{
+	t_list	*b;
+	size_t	i;
+	size_t	j;
+	int		bits;
+
+	if (!a || !*a || size < 2)
+		return ;
+	b = NULL;
+	sort_array(nums, size);
+	bits = max_bits(size);
+	i = 0;
+	while (i < (size_t)bits)
+	{
+		j = 0;
+		b = NULL;
+		while (j < size)
+		{
+			if ((get_index(nums, size, *(int *)(*a)->content) >> i) & 1)
+				ra(a);
+			else
+				pb(a, &b);
+			j++;
+		}
+		while (b)
+			pa(a, &b);
+		i++;
 	}
 }
