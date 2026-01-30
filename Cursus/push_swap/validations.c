@@ -6,7 +6,7 @@
 /*   By: pmarcos- <pmarcos-@student.42madrid.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/05 19:37:46 by pmarcos-          #+#    #+#             */
-/*   Updated: 2026/01/29 14:09:46 by pmarcos-         ###   ########.fr       */
+/*   Updated: 2026/01/30 19:18:28 by pmarcos-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,9 +59,9 @@ int	ft_is_duplicate_number(int *num, size_t size)
 /**
  * @brief Convert each character to long.
  */
-int	ft_atoi2(char *str)
+long	ft_atoi2(char *str)
 {
-	int		res;
+	long	res;
 	size_t	count;
 	int		sign;
 
@@ -78,8 +78,6 @@ int	ft_atoi2(char *str)
 	{
 		if (str[count] >= '0' && str[count] <= '9')
 			res = res * 10 + (str[count] - '0');
-		if (res * sign > INT_MAX || res * sign < INT_MIN)
-			return (INT_MAX);
 		count++;
 	}
 	return (res * sign);
@@ -122,6 +120,7 @@ int	parse_args(int argc, char **argv, int **out, size_t *size)
 	char	**split;
 	int		*nums;
 	size_t	i;
+	long	val;
 
 	if (argc < 2)
 		return (1);
@@ -141,9 +140,10 @@ int	parse_args(int argc, char **argv, int **out, size_t *size)
 	{
 		if (!ft_is_number(split[i]))
 			return (free_split(split), free(nums), ft_printf("No es númerico\n"), 1);
-		nums[i] = ft_atoi2(split[i]);
-		if (nums[i] == INT_MAX)
+		val = ft_atoi2(split[i]);
+		if (val > INT_MAX || val < INT_MIN)
 			return (free_split(split), free(nums), ft_printf("Overflow\n"), 1);
+		nums[i] = (int)val;
 		i++;
 	}
 	free_split(split);
