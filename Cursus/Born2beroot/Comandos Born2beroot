@@ -1,0 +1,113 @@
+COMANDOS BORN 2 BE ROOT:
+
+----- INSTALANDO SUDO -----
+- su  --> Cambiar al usuario  root.
+- apt install sudo  --> Instalar el paquete sudo.
+- sudo reboot  --> Reiniciar el sistema.
+
+----- CREAR USUARIO -----
+- sudo adduser pmarcos-
+
+----- CREAR GRUPO -----
+- sudo addgroup user42
+- getent group user42  --> Muestra todos los grupos.
+
+----- AGREGAR USUARIOS A GRUPOS -----
+- sudo adduser pmarcos- user42 / sudo adduser pmarcos- sudo
+- getent group sudo user42  --> Muestra los grupos sudo y user42 y los usuarios que pertenecen a estos.
+
+----- INSTALACIÓN DE SSH -----
+- sudo apt update  --> Actualizar el sistema.
+- sudo apt install openssh-server  --> Instalar el servidor OpenSSH.
+- sudo service ssh status -> Verificar instalación.
+
+----- CONFIGURACIÓN DE SSH -----
+- su ... nano /etc/ssh/sshd_config  --> Editar archivo de configuración.
+- Cambiamos puerto 22 a 4242.
+- sudo service ssh restart  --> Reinicio servicio SSH.
+- sudo service ssh status  --> Comprobación del estado del servicio.
+
+----- CONEXIÓN A TRAVÉS DE SSH -----
+- Configuracion máquina >> Red >> Reenvío de puertos >> Añadir nueva regla >> Puerto anfitrion:4242, Puerto invitado:4242.
+- (Desde  nuestra máquina) ssh pmarcos-@localhost -p 4241.
+
+----- INSTALACIÓN Y CONFIGURACIÓN DE FIREWALL UFW -----
+- sudo apt install ufw  --> Instalar el paquete UFW
+- sudo ufw enable  --> Habilitar el firewall.
+
+----- PERMITIR UN PUERTO AL FIREWALL
+- sudo ufw allow 4242  --> Permite que nuestro firewall acepte las conexiones que se realizarán en el puerto 4242.
+- sudo ufw status  --> Verifica el estado actual de nuestro firewall.
+
+----- POLÍTICAS DE SUDO -----
+- touch /etc/sudoers.d/sudo_config  --> Crea un archivo que almacenerá nuestra política de sudo.
+- mkdir /var/log/sudo  --> Crea un directorio.
+- nano /etc/sudoers.d/sudo_config  --> Editamos el archivo.
+- Una vez que estemos editando el archivo debemos configurarlo con los siguientes comandos:
+	passwd_tries=3 : Total de intentos para ingresar la contraseña de sudo.
+	badpass_message="mensaje" : el mensaje que se mostrará cuando la contraseña falle.
+	logfile="/var/log/sudo/sudo_config" : Ruta donde se almacenarán los registros de sudo.
+	log_input, log_output : Qué se registrará.
+	iolog_dir="/var/log/sudo" : Qué se registrará.
+	requiretty : TTY se vuelve obligatorio
+	secure_path="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/snap/bin" : Carpetas que se excluirán de sudo
+	
+----- POLÍTICA DE CONTRASEÑAS ------
+- nano /etc/login.defs  --> Editarlas definiciones de inicio de sesión.
+- Modificar parámetros de contraseña: Localice y cambie los siguientes parámetros:
+	Cambiar: PASS_MAX_DAYS 99999→PASS_MAX_DAYS 30
+	Cambiar: PASS_MIN_DAYS 0→PASS_MIN_DAYS 2
+- sudo apt install libpam-pwquality  -->  Instala la biblioteca de calidad de contraseñas.
+- nano /etc/pam.d/common-password  --> Edita la configuración de PAM.
+- Debajo de retry=3 debemos agregar los siguientes comandos.
+	minlen=10 ➤ El mínimo de caracteres que debe contener una contraseña.
+	ucredit=-1 ➤ La contraseña debe contener al menos una letra mayúscula. Debemos escribirla con un signo -, ya que así se sabe que se refiere al mínimo de 				caracteres; si se añade un signo +, se referirá al máximo de caracteres.
+	dcredit=-1 ➤ La contraseña debe contener al menos un dígito.
+	lcredit=-1 ➤ La contraseña debe contener al menos una letra minúscula.
+	maxrepeat=3 ➤ La contraseña no puede tener el mismo carácter repetido tres veces consecutivas.
+	reject_username ➤ La contraseña no puede contener el nombre de usuario dentro de sí misma.
+	difok=7 ➤ La contraseña debe contener al menos siete caracteres diferentes de la última contraseña utilizada.
+	enforce_for_root ➤ Implementaremos esta política de contraseña para root.
+
+
+-------------------------- SCRIPT ----------------------------
+	----- ARQUITECTURA -----
+	- uname -a  -->  Muestra la arquitectura del sistema operativo.
+
+	----- NÚCLEOS FÍSICOS -----
+	- grep "physical id" /proc/cpuinfo | wc -l  --> Muestra el número de núcleos físicos.
+
+	----- NÚCLEOS VIRTUALES -----
+	- grep processor /proc/cpuinfo | wc -l  --> Muestra el número de núcleos virtuales.
+
+	----- RAM -----
+	- free --mega | awk '$1 == "Mem:" {print $3}'  --> Muestra el número MB de memorias usadas.
+	- free --mega | awk '$1 == "Mem:" {print $2}'  --> Muestra el número total de MB de memoria.
+	- free --mega | awk '$1 == "Mem:" {printf("(%.2f%%)\n", $3/$2*100)}'  --> Muestra  el porcentaje de memoria utilizada.
+
+	----- MEMORIA DISCO -----
+	- df -m | grep "/dev/" | grep -v "/boot" | awk '{use += $3} {total += $2} END {printf("(%d%%)\n")  --> Muestra el nº de la memoria del disco ocupada.
+
+	----- PORCENTAJE DE USO DE CPU -----
+	- vmstat 1 4 | tail -1 | awk '{print $15}'
+
+	----- ÚLTIMO REINICIO -----
+	- who -b | awk '{print $(NF-1), $NF}'   --> Muestra fecha y hora del último reinicio.
+
+	----- LVM ACTIVO -----
+	- if [ $(lsblk | grep "lvm" | wc -l) -gt 0 ]; then echo yes; else echo no; fi  --> para saber si LVM está activo o no.
+	
+	----- CONEXIONES TCP -----
+	ss -ta | grep ESTAB | wc -l  --> para obener el número de conexiones TCP.
+	
+	----- NÚMERO DE USUARIOS -----
+	users | wc -w  --> para obtener el número de usuarios.
+	
+	----- DIRECCION IP Y MAC -----
+	ip link | grep "link/ether" | awk '{print $2}'  --> para obtener la direccion emac.
+
+	----- NUMERO DE COMANDOS EJECUTADOS CON SUDO -----
+	journalctl _COMM=sudo | grep COMMAND | wc -l  --> para obtener el número de comandos ejecutados.
+
+
+
