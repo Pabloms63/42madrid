@@ -6,12 +6,15 @@
 /*   By: pmarcos- <pmarcos-@student.42madrid.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/20 20:55:44 by pmarcos-          #+#    #+#             */
-/*   Updated: 2025/10/20 21:03:29 by pmarcos-         ###   ########.fr       */
+/*   Updated: 2026/02/06 18:35:12 by pmarcos-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft.h"
 
+/**
+ * @brief Elimina y libera todos los nodos de una lista enlazada.
+ */
 void	ft_lstclear(t_list **lst, void (*del)(void *))
 {
 	t_list	*node;

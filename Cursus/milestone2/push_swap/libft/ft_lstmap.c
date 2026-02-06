@@ -6,11 +6,15 @@
 /*   By: pmarcos- <pmarcos-@student.42madrid.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/20 21:06:00 by pmarcos-          #+#    #+#             */
-/*   Updated: 2026/01/05 22:12:28 by pmarcos-         ###   ########.fr       */
+/*   Updated: 2026/02/06 19:29:04 by pmarcos-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft.h"
+
+/**
+ * @brief Itera todos los nodos de la lista y aplica una función en cada uno de ellos.
+ */
 
 t_list	*ft_lstmap(t_list *lst, void *(*f)(void *), void (*del)(void *))
 {

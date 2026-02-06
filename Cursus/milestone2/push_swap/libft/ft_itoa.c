@@ -6,12 +6,15 @@
 /*   By: pmarcos- <pmarcos-@student.42madrid.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/13 16:07:09 by pmarcos-          #+#    #+#             */
-/*   Updated: 2025/10/17 19:21:53 by pmarcos-         ###   ########.fr       */
+/*   Updated: 2026/02/06 18:32:03 by pmarcos-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft.h"
 
+/**
+ * @brief Cuenta todos los dígitos de un número entero
+ */
 int	ft_cnt_digits(int n)
 {
 	int		len;
@@ -32,6 +35,9 @@ int	ft_cnt_digits(int n)
 	return (len);
 }
 
+/**
+ * @brief Convierte un entero en un string.
+ */
 char	*ft_itoa(int n)
 {
 	int		len;
