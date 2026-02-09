@@ -6,12 +6,15 @@
 /*   By: pmarcos- <pmarcos-@student.42madrid.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/22 17:35:25 by pmarcos-          #+#    #+#             */
-/*   Updated: 2026/02/06 17:51:09 by pmarcos-         ###   ########.fr       */
+/*   Updated: 2026/02/09 17:37:45 by pmarcos-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "push_swap.h"
 
+/**
+ * @brief Añade los argumentos en la pila A.
+ */
 static void	add_nums_to_stack_a(t_list **a, int *nums, size_t size)
 {
 	size_t	i;
@@ -80,7 +83,7 @@ int	main(int argc, char **argv)
 	push_swap(&a, nums, size);
 	free(nums);
 	if (!sort_nums(a))
-		return (ft_lstclear(&a, free), ft_printf("No está ordenado\n"), 0);
+		return (ft_lstclear(&a, free), 0);
 	ft_lstclear(&a, free);
 	return (0);
 }
