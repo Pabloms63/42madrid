@@ -45,7 +45,14 @@ Pasos a seguir para instalar, compilar y ejecutar el programa.
 - cd push_swap
 - Compila el programa -> make.
 - Ejecuta el programa pasando una lista de argumentos:
-	ejemplo: ./push_swap 3 2 5 1 4
+
+	Ejemplos: 
+
+	1.		./push_swap 3 2 5 1 4
+
+	2.		ARG=$(shuf -i 1-10000 -n 500 | tr '\n' ' ')
+	
+			./push_swap $ARG
 
 ---
 
