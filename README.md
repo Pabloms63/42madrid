@@ -49,7 +49,16 @@ Dentro de Cursus se encuentran estos contenidos:
    Proyecto que nos permite reordenar datos de forma controlada mediante operaciones simples.
 2. 😈 Examen Rank 2:
    Examen de 4 niveles propio del milestone2.
-3. Python Module 00:
+3. 🐍 Módulos de Python:
+   - Module00
+   - MOdule01
+   - Module02
+   - Module03
+   - Module04
+   - Module05
+   - Module06
+   - Module07
+   
    
 
 
