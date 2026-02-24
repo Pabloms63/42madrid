@@ -51,7 +51,7 @@ Dentro de Cursus se encuentran estos contenidos:
    Examen de 4 niveles propio del milestone2.
 3. 🐍 Módulos de Python:
    - Module00
-   - MOdule01
+   - Module01
    - Module02
    - Module03
    - Module04
