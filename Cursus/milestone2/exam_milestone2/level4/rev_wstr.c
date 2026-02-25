@@ -1,32 +1,33 @@
-#include "unistd.h"
+#include <unistd.h>
 
-int	main(int ac, char **av)
+int main(int argc, char **argv)
 {
-	int i;
-	int j;
-	int first_word;
+    if (argc == 2)
+    {
+        int cnt = 0;
+        while (argv[1][cnt])
+            cnt++;
+        cnt--;
 
-	i = 0;
-	first_word = 0;
-	if (ac == 2)
-	{
-		while (av[1][i] != '\0')
-			i++;
-		i--;
-		while (i >= 0)
-		{
-			while (i >= 0 && (av[1][i] == ' ' || av[1][i] == '\t'))
-				i--;
-			j = i;
-			while (j >= 0 && av[1][j] != ' ' && av[1][j] != '\t')
-				j--;
-			if (first_word)
-				write(1, " ", 1);
-			write(1, &av[1][j + 1], i - j);
-			first_word = 1;
-			i = j;
-		}
-	}
-	write(1, "\n", 1);
-	return (0);
+        while (cnt >= 0)
+        {
+            while (cnt >= 0 && argv[1][cnt] == ' ')
+                cnt--;
+
+            int end = cnt;
+
+            while (cnt >= 0 && argv[1][cnt] != ' ')
+                cnt--;
+
+            int start = cnt + 1;
+
+            while (start <= end)
+                write(1, &argv[1][start++], 1);
+
+            if (cnt >= 0)
+                write(1, " ", 1);
+        }
+    }
+    write(1, "\n", 1);
+    return 0;
 }
