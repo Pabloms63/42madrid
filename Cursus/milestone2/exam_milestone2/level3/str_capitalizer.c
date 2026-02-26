@@ -4,41 +4,34 @@ int main (int argc, char **argv)
 {
 	if (argc >= 2)
 	{
-		int c = 1;
-		while (argv[c])
+		int cnt1 = 1;
+		while (argv[cnt1])
 		{
-			int cnt = 0;
-			while (argv[c][cnt])
+			int cnt2 = 0;
+			while(argv[cnt1][cnt2])
 			{
-				while (argv[c][cnt] && argv[c][cnt] == 32)
+				while (argv[cnt1][cnt2] && argv[cnt1][cnt2] == 32)
 				{
-					write(1, &argv[c][cnt], 1);
-					cnt++;
+					write(1, &argv[cnt1][cnt2], 1);
+					cnt2++;
 				}
-				if (argv[c][cnt] && argv[c][cnt] != 32)
+				if (argv[cnt1][cnt2] && argv[cnt1][cnt2] != 32)
 				{
-					if (argv[c][cnt] >= 97 && argv[c][cnt] <= 122)
-						argv[c][cnt] -= 32;
-					write(1, &argv[c][cnt], 1);
-					cnt++;
+					if (argv[cnt1][cnt2] && (argv[cnt1][cnt2] >= 97 && (argv[cnt1][cnt2] <= 122)))
+						argv[cnt1][cnt2] -= 32;
+					write(1, &argv[cnt1][cnt2], 1);
+					cnt2++;
 				}
-				while (argv[c][cnt] && argv[c][cnt] != 32)
+				while (argv[cnt1][cnt2] && argv[cnt1][cnt2] != 32)
 				{
-					if (argv[c][cnt] && (argv[c][cnt] >= 65 && argv[c][cnt] <= 90))
-					{
-						argv[c][cnt] += 32;
-						write(1, &argv[c][cnt], 1);
-						cnt++;
-					}
-					else
-					{
-						write(1, &argv[c][cnt], 1);
-						cnt++;
-					}
+					if (argv[cnt1][cnt2] && (argv[cnt1][cnt2] >= 65 && (argv[cnt1][cnt2] <= 90)))
+						argv[cnt1][cnt2] += 32;
+					write(1, &argv[cnt1][cnt2], 1);
+					cnt2++;
 				}
 			}
 			write(1, "\n", 1);
-			c++;
+			cnt1++;
 		}
 	}
 	else
