@@ -2,8 +2,39 @@ class GardenManager:
 	def __init__(self, gardens):
 		self.gardens = gardens
 
+	def show_garden_scores(self):
+		scores = []
+		for garden in self.gardens:
+			score = self.GardenStats.calculate_score(garden)
+			scores.append(f"{garden.owner_name}: {score}")
+		print("Garden scores - " + ", ".join(scores))
+
+	def show_height_validation_test(self):
+		for garden in self.gardens:
+			print(f"Height validation test: {GardenManager.GardenStats.validation_height(garden)}")
+
+	def total_gardens(self):
+		print(f"Total gardens managed: {len(self.gardens)}")
+
 	class GardenStats:
-		pass
+		@staticmethod
+		def validation_height(garden):
+			for p in garden.plants:
+				if (p.height < 0):
+					return False
+			return True
+
+		@staticmethod
+		def calculate_score(garden):
+			score = 0
+			for p in garden.plants:
+				score += p.height
+				if isinstance(p, PrizeFlower):
+					score += p.prize_points
+				if isinstance(p, FloweringPlant):
+					if p.blooming:
+						score += 5
+			return score
 	
 class Garden():
 	def __init__(self, owner_name, plants):
@@ -15,7 +46,7 @@ class Garden():
 		print(f"Added {plant.name} to {self.owner_name}'s garden")
 
 	def help_plants_grow(self):
-		print(f"{self.owner_name} is helping all plants grow...")
+		print(f"\n{self.owner_name} is helping all plants grow...")
 		total_growth = 0
 		for p in self.plants:
 			old_height = p.height
@@ -24,18 +55,18 @@ class Garden():
 		return (total_growth)
 
 	def generate_report(self, total_growth):
-		print(f"=== {self.owner_name}'s Garden Report ===")
+		print(f"\n=== {self.owner_name}'s Garden Report ===")
 		print("Plants in garden:")
 		regular = 0
 		flowering = 0
 		prize_flower = 0
 		for p in self.plants:
-			if type(p) == Plant:
-				regular += 1
-			elif type(p) == FloweringPlant:
-				flowering += 1
-			elif (type(p) == PrizeFlower):
+			if isinstance(p, PrizeFlower):
 				prize_flower += 1
+			elif isinstance(p, FloweringPlant):
+				flowering += 1
+			elif (isinstance(p, Plant)):
+				regular += 1
 			p.get_info()
 
 		print(f"\nPlants added: {len(self.plants)}, growth: {total_growth}cm")
@@ -49,7 +80,7 @@ class Plant:
 	
 	def grow(self):
 		self.height += 1
-		print(f"{self.name} grew 1 cm")
+		print(f"{self.name} grew 1cm")
 
 	def get_info(self):
 		print(f"- {self.name}: {self.height}cm")
@@ -62,9 +93,9 @@ class FloweringPlant(Plant):
 
 	def get_info(self):
 		if self.blooming == True:
-			print(f"- {self.name}: {self.height}, {self.color}flowers ({self.blooming})")
+			print(f"- {self.name}: {self.height}, {self.color} flowers (blooming)")
 		else:
-			print(f"- {self.name}: {self.height}, {self.color}flowers ({self.blooming})")
+			print(f"- {self.name}: {self.height}, {self.color} flowers (not blooming)")
 
 class PrizeFlower(FloweringPlant):
 	def __init__(self, name, height, age, color, blooming, prize_points):
@@ -72,23 +103,34 @@ class PrizeFlower(FloweringPlant):
 		self.prize_points = prize_points
 
 	def get_info(self):
-		print(f"- {self.name}: {self.height}cm {self.color} flowers ({self.blooming}), Prize points: {self.prize_points}")
+		if self.blooming == True:
+			print(f"- {self.name}: {self.height}cm {self.color} flowers (blooming), Prize points: {self.prize_points}")
+		else:
+			print(f"- {self.name}: {self.height}cm {self.color} flowers (not blooming), Prize points: {self.prize_points}")
 
 if __name__ == "__main__":
-	#Plantas
-	plant1 = Plant("Oak Tree", 101, 12500)
-	flower1 = FloweringPlant("Rose", 26, 240, "red", "blooming")
-	prize_flower1 = PrizeFlower("Sunflower", 51, 325, "yellow", "not blooming", 10)
+	print("=== Garden Management System Demo ===\n")
 
-    #Creo lista vacía
-	plants = []
-
-	#Jardines
-	garden1 = Garden("Pablo", plants)
+	#Jardin 1
+	garden1 = Garden("Pablo", [])
+	plant1 = Plant("Oak Tree", 210, 10235)
+	flower1 = FloweringPlant("Rose", 26, 240, "red", True)
+	prize_flower1 = PrizeFlower("Sunflower", 51, 325, "yellow", False, 10)
 	garden1.add_plant(plant1)
-	print("\n")
+	garden1.add_plant(flower1)
+	garden1.add_plant(prize_flower1)
 	total_growth = garden1.help_plants_grow()
 	garden1.generate_report(total_growth)
 
+	#Jardin 2
+	garden2 = Garden("Amancio", [])
+	plant2 = Plant("Holm Oak", 101, 12500)
+	garden2.add_plant(plant2)
+	total_growth = garden2.help_plants_grow()
+	garden2.generate_report(total_growth)
+
 	#GardenManager
-	boss = GardenManager(garden1)
+	boss = GardenManager([garden1, garden2])
+	boss.show_height_validation_test()
+	boss.show_garden_scores()
+	boss.total_gardens()
