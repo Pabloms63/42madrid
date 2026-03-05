@@ -33,25 +33,25 @@ Dentro de Cursus se encuentran estos contenidos:
 ---
 
 # Milestone1
-1. 🤖 Born2beroot:
+1. 🤖 Born2beroot: ✅
    En este proyecto nos da las nociones básicas para descubrir el mundo de la adminsitración y seguridad de sistemas.
 
-2. 🖨️ Printf:
+2. 🖨️ Printf: ✅
    Nos permite tener nuestra propia función para imprimir por pantalla cualquier tipo de dato.
 
-3. 📜 Get_Next_Line:
+3. 📜 Get_Next_Line: ✅
    Proyecto que nos permite imprimir linea por linea de un texto teniendo cuenta el Buffer_size.
 
 ---
 
 # MIlestone2
-1. 🗃️ Push_swap:
+1. 🗃️ Push_swap: ✅
    Proyecto que nos permite reordenar datos de forma controlada mediante operaciones simples.
-2. 😈 Examen Rank 2:
+2. 😈 Examen Rank 2: ✅
    Examen de 4 niveles propio del milestone2.
-3. 🐍 Módulos de Python:
-   - Module00
-   - Module01
+3. 🐍 Módulos de Python: 🔄
+   - Module00 ✅
+   - Module01 🔄
    - Module02
    - Module03
    - Module04
