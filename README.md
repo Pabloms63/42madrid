@@ -5,9 +5,9 @@
 
 # En este repositorio se irán subiendo todos los proyectos de 42madrid.
 ## Explicación introductoria del contenido de las carpetas
-- 🏫 Cursus:
+- 🏫 Cursus: 🔄
   La más importante, dónde se encuentran todos los proyectos importantes del curso.
-- 🏊 Piscina:
+- 🏊 Piscina: ✅
   Aquí estas ubicados todos los proyectos básicos e introducción a C vistos en la piscina.
 - 🧪 Pruebas:
   Como indica el nombre en esa carpeta voy subiendo pruebillas acerca de dudas que me van surgiendo.
@@ -27,7 +27,7 @@ Dentro de Cursus se encuentran estos contenidos:
 ---
 
 # Milestone0
-1. 📚 Libft:
+1. 📚 Libft: ✅
    Este proyecto consiste en relizar una librería con muchas de las clases que utilizaremos durante el CURSUS.
 
 ---
