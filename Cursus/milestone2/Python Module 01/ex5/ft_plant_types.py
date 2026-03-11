@@ -18,8 +18,8 @@ class Flower(Plant):
 
     def get_info(self):
         print(
-            f"{self.name}(Flower): {self.height}cm, "
-            f"{self.age} days, {self.color} color)"
+            f"{self.name} (Flower): {self.height}cm, "
+            f"{self.age} days, {self.color} color"
         )
 
 
@@ -34,7 +34,7 @@ class Tree(Plant):
 
     def get_info(self):
         print(
-            f"{self.name}(Tree): {self.height}cm, "
+            f"{self.name} (Tree): {self.height}cm, "
             f"{self.age} days, {self.trunk_diameter}cm diameter"
         )
 
@@ -47,13 +47,14 @@ class Vegetable(Plant):
 
     def get_info(self):
         print(
-            f"{self.name}(Vegetable): {self.height}cm, {self.age} days, "
+            f"{self.name} (Vegetable): {self.height}cm, {self.age} days, "
             f"{self.harvest_season}\n{self.name} "
             f"is rich in {self.nutritional_value}\n"
         )
 
 
 if __name__ == "__main__":
+    print("=== Garden Plant Types ===\n")
     # Flowers
     flower1 = Flower("Rose", 25, 30, "red")
     flower1.get_info()
@@ -71,7 +72,7 @@ if __name__ == "__main__":
     tree2.produce_shade()
 
     # Vegetables
-    vegetable1 = Vegetable("Tomato", 80, 90, "summer harvest", "vitamin c")
+    vegetable1 = Vegetable("Tomato", 80, 90, "summer harvest", "vitamin C")
     vegetable1.get_info()
-    vegetable2 = Vegetable("Carrot", 120, 102, "spring harvest", "vitamin a")
+    vegetable2 = Vegetable("Carrot", 120, 102, "spring harvest", "vitamin A")
     vegetable2.get_info()

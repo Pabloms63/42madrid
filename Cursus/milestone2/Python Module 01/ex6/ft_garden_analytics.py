@@ -2,6 +2,10 @@ class GardenManager:
     def __init__(self, gardens):
         self.gardens = gardens
 
+    @classmethod
+    def create_garden_network(cls, gardens):
+        return cls(gardens)
+
     def show_garden_scores(self):
         scores = []
         for garden in self.gardens:
@@ -10,11 +14,12 @@ class GardenManager:
         print("Garden scores - " + ", ".join(scores))
 
     def show_height_validation_test(self):
+        valid = True
         for garden in self.gardens:
-            print(
-                f"Height validation test: "
-                f"{GardenManager.GardenStats.validation_height(garden)}"
-            )
+            if not GardenManager.GardenStats.validation_height(garden):
+                valid = False
+                break
+        print(f"Height validation test: {valid}")
 
     def total_gardens(self):
         print(f"Total gardens managed: {len(self.gardens)}")
@@ -23,7 +28,7 @@ class GardenManager:
         @staticmethod
         def validation_height(garden):
             for p in garden.plants:
-                if (p.height < 0):
+                if p.height < 0:
                     return False
             return True
 
@@ -69,11 +74,13 @@ class Garden():
                 prize_flower += 1
             elif isinstance(p, FloweringPlant):
                 flowering += 1
-            elif (isinstance(p, Plant)):
+            elif isinstance(p, Plant):
                 regular += 1
             p.get_info()
 
-        print(f"\nPlants added: {len(self.plants)}, growth: {total_growth}cm")
+        print(
+            f"\nPlants added: {len(self.plants)}, "
+            f"Total growth: {total_growth}cm")
         print(
             f"Plant types: {regular} regular, {flowering} "
             f"flowering, {prize_flower} prize flowers\n"
@@ -103,12 +110,12 @@ class FloweringPlant(Plant):
     def get_info(self):
         if self.blooming is True:
             print(
-                f"- {self.name}: {self.height}, "
+                f"- {self.name}: {self.height}cm, "
                 f"{self.color} flowers (blooming)"
                 )
         else:
             print(
-                f"- {self.name}: {self.height}, "
+                f"- {self.name}: {self.height}cm, "
                 f"{self.color} flowers (not blooming)"
                 )
 
@@ -153,7 +160,7 @@ if __name__ == "__main__":
     garden2.generate_report(total_growth)
 
     # GardenManager
-    boss = GardenManager([garden1, garden2])
+    boss = GardenManager.create_garden_network([garden1, garden2])
     boss.show_height_validation_test()
     boss.show_garden_scores()
     boss.total_gardens()
