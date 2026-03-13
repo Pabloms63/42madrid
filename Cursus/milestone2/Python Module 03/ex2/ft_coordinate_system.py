@@ -30,7 +30,7 @@ if len(sys.argv) == 1:
         print(f"Error parsing coordinates: {e}")
         print(f"Error details - Type: {type(e).__name__}, Args: {e.args}")
     
-    print("\nUnpacking demonstration:\n")
+    print("\nUnpacking demonstration:")
     print(f"Player at x={parsed[0]}, y={parsed[1]}, z={parsed[2]}")
     print(f"Coordinates: X={parsed[0]}, Y={parsed[1]}, Z={parsed[2]}")
 else:
