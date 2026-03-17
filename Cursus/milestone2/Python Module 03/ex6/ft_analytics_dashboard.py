@@ -6,11 +6,11 @@ if __name__ == "__main__":
         {"name": "bob", "score": 1800, "achievements": ["first_kill", "level_3"], "region": "east"},
         {"name": "charlie", "score": 2150, "achievements": ["level_10", "boss_slayer"], "region": "central"},
         {"name": "diana", "score": 2050, "achievements": ["first_kill", "level_7"], "region": "north"},
-        {"name": "pablo", "score": 0, "achievements": ["level_1"], "region": None},
+        {"name": "pablo", "score": 0, "achievements": ["die_without_killing"], "region": None},
     ]
     high_scores = [p["name"] for p in players if p["score"] > 2000]
     print(f"High scorers (>2000): {high_scores}")
-    scores_doubled = [(s["score"] * 2) for s in players]
+    scores_doubled = [(p["score"] * 2) for p in players]
     print(f"Scores doubled: {scores_doubled}")
     active_players = [p["name"] for p in players if p["score"] > 0]
     print(f"Active players: {active_players}")
@@ -28,3 +28,23 @@ if __name__ == "__main__":
     print(f"Achievement counts: {achievement_counts}")
 
     print("\n=== Set Comprehension Examples ===")
+    unique_players = {p["name"] for p in players}
+    print(f"Unique players: {unique_players}")
+    unique_achievements = {a for p in players for a in p["achievements"]}
+    print(f"Unique achievements: {unique_achievements}")
+    active_regions = {p["region"] for p in players if p["region"] != None}
+    print(f"Active regions: {active_regions}")
+
+    print("\n=== Combined Analysis ===")
+    total_players = len(players)
+    print(f"Total players: {total_players}")
+    total_unique_achievements = len({a for p in players for a in p["achievements"]})
+    print(f"Total unique achievements: {total_unique_achievements}")
+    total_scores = len(players)
+    sum_scores = sum(p["score"] for p in players)
+    print(f"Average score: {sum_scores / total_scores}")
+    top_player = players[0]
+    for p in players:
+        if p["score"] > top_player["score"]:
+            top_player = p
+    print(f"Top performer: {top_player['name']} ({top_player['score']} points, {len(top_player['achievements'])} achievements)")
