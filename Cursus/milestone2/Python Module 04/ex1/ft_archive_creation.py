@@ -1,4 +1,4 @@
-if __name__ == "__main__":
+def main():
     print("=== CYBER ARCHIVES - PRESERVATION SYSTEM ===\n")
     new_file = "new_discovery.txt"
     print(f"Initializing new storage unit: {new_file}")
@@ -18,3 +18,7 @@ if __name__ == "__main__":
         print(f"Archive '{new_file}' ready for long-term preservation.")
     except Exception:
         print("ERROR: Failed to create storage unit.")
+
+
+if __name__ == "__main__":
+    main()

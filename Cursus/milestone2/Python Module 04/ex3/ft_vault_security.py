@@ -6,13 +6,11 @@ def main():
     print("SECURE EXTRACTION:")
     try:
         with open("classified_data.txt", "r") as file:
-             for line in file:
+            for line in file:
                 print(line.strip())
     except FileNotFoundError:
         pass
 
-    try:
-
 
 if __name__ == "__main__":
-	main()
+    main()
