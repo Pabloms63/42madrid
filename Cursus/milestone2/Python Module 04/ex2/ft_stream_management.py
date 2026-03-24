@@ -1,7 +1,7 @@
 import sys
 
 
-def main():
+def main() -> None:
     print("=== CYBER ARCHIVES - COMMUNICATION SYSTEM ===\n")
 
     archivist_ID = input("Input Stream active. Enter archivist ID: ")

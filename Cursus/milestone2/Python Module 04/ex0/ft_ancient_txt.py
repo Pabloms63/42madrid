@@ -1,4 +1,4 @@
-def main():
+def main() -> None:
     print("=== CYBER ARCHIVES - DATA RECOVERY SYSTEM ===")
     vault_file = "ancient_fragment.txt"
     print(f"Accessing Storage Vault: {vault_file}")
