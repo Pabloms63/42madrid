@@ -4,6 +4,9 @@ from typing import Any
 
 # Clase abstracta base
 class DataProcessor(ABC):
+    def __init__(self, debug: bool = True):
+        self.debug = debug
+
     @abstractmethod
     def process(self, data: Any) -> str:
         pass
@@ -19,17 +22,19 @@ class DataProcessor(ABC):
 # Procesador de números
 class NumericProcessor(DataProcessor):
     def process(self, data: Any) -> str:
-        print("Initializing Numeric Processor...")
-        print(f"Processing data: {data}")
+        if self.debug:
+            print("Initializing Numeric Processor...")
+            print(f"Processing data: {data}")
         if not self.validate(data):
             raise ValueError("Invalid numeric data")
-        print("Validation: Numeric data verified")
+        if self.debug:
+            print("Validation: Numeric data verified")
         length = len(data)
         total = sum(data)
         avg = total / length
         result = (
             f"Processed {length} numeric values, "
-            f"sum={total}, avg={avg}\n"
+            f"sum={total}, avg={avg}"
             )
         return self.format_output(result)
 
@@ -42,15 +47,17 @@ class NumericProcessor(DataProcessor):
 # Procesador de texto
 class TextProcessor(DataProcessor):
     def process(self, data: Any) -> str:
-        print("Initializing Text Processor...")
-        print(f"Processing data: {data}")
+        if self.debug:
+            print("\nInitializing Text Processor...")
+            print(f"Processing data: {data}")
         if not self.validate(data):
             raise ValueError("Invalid text data")
-        print("Validation: Text data verified")
+        if self.debug:
+            print("Validation: Text data verified")
         len_string = len(data)
         total_words = len(data.split())
         result = (
-            f"Processed text: {len_string} characters, {total_words} words\n"
+            f"Processed text: {len_string} characters, {total_words} words"
         )
         return self.format_output(result)
 
@@ -61,22 +68,24 @@ class TextProcessor(DataProcessor):
 # Procesador de logs
 class LogProcessor(DataProcessor):
     def process(self, data: Any) -> str:
-        print("Initializing Log Processor...")
-        print(f'Processing data: "{data}"')
+        if self.debug:
+            print("\nInitializing Log Processor...")
+            print(f'Processing data: "{data}"')
         if not self.validate(data):
             raise ValueError("Invalid log data")
-        print("Validation: Log entry verified")
+        if self.debug:
+            print("Validation: Log entry verified")
         if "ERROR" in data:
             level = "ALERT"
         else:
             level = "INFO"
         error = " ".join(data.split()[1:])
-        result = f"[{level}] level detected: {error}\n"
+        result = f"[{level}] level detected: {error}"
         return self.format_output(result)
 
     def validate(self, data):
         return isinstance(data, str) and len(data) > 0
-    
+
     def format_output(self, result: str) -> str:
         return super().format_output(result)
 
@@ -92,12 +101,12 @@ if __name__ == "__main__":
     p3 = LogProcessor()
     print(p3.process("ERROR: Connection timeout"))
 
-    print("=== Polymorphic Processing Demo ===")
+    print("\n=== Polymorphic Processing Demo ===")
     print("Processing multiple data types through same interface...")
     processors = [
-        NumericProcessor(),
-        TextProcessor(),
-        LogProcessor()
+        NumericProcessor(False),
+        TextProcessor(False),
+        LogProcessor(False)
     ]
     data_samples = [
         [1, 2, 3],
