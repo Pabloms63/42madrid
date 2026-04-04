@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
 from typing import Any, List, Optional, Dict, Union
 
+
 class DataStream(ABC):
     def __init__(self, stream_id: str):
         self.stream_id = stream_id
@@ -10,14 +11,18 @@ class DataStream(ABC):
     def process_batch(self, data_batch: List[Any]) -> str:
         pass
 
-    def filter_data(self, data_batch: List[Any], criteria: Optional[str]) -> List[Any]:
+    def filter_data(
+            self, data_batch: List[Any], criteria: Optional[str]) -> List[Any]:
         if criteria is None:
             return data_batch
-        
-        return [element for element in data_batch if isinstance(element, str) and criteria in element]
+
+        return [
+            element for element in data_batch
+            if isinstance(element, str) and criteria in element
+            ]
 
     def get_stats(self) -> Dict[str, Union[str, int, float]]:
-        return{
+        return {
             "stream_id": self.stream_id,
             "stream_type": self.__class__.__name__,
             "total_processed": self.total_processed
@@ -48,7 +53,9 @@ class SensorStream(DataStream):
             avg = sum(temps) / len(temps)
             self.total_processed += len(temps)
 
-            return f"Sensor analysis: {len(temps)} readings processed, avg temp: {avg:.2f}°C"
+            return (
+                f"Sensor analysis: {len(temps)} readings processed, "
+                f"avg temp: {avg:.2f}°C")
         except Exception as e:
             return f"Sensor processing error: {str(e)}"
 
@@ -80,7 +87,9 @@ class TransactionStream(DataStream):
 
             self.total_processed += count
             sign = "+" if net >= 0 else ""
-            return f"Transaction analysis: {count} operations, net flow: {sign}{net} units"
+            return (f"Transaction analysis: {count} operations, "
+                    f"net flow: {sign}{net} units"
+                    )
 
         except Exception as e:
             return f"Transaction analysis: {str(e)}"
@@ -100,8 +109,11 @@ class EventStream(DataStream):
             errors = [e for e in events if e == "error"]
 
             self.total_processed += len(events)
-            
-            return f"Event analysis: {len(events)} events, {len(errors)} error detected"
+
+            return (
+                f"Event analysis: {len(events)} events, "
+                f"{len(errors)} error detected"
+                )
         except Exception as e:
             return f"Event processing error: {str(e)}"
 
@@ -124,6 +136,7 @@ class StreamProcessor:
                 print(f"- Transaction data: {len(batch)} operations processed")
             elif isinstance(stream, EventStream):
                 print(f"- Event data: {len(batch)} events processed")
+
 
 if __name__ == "__main__":
     print("=== CODE NEXUS - POLYMORPHIC STREAM SYSTEM ===")
@@ -148,9 +161,9 @@ if __name__ == "__main__":
     processor.add_stream(event)
 
     batches = [
-    ["temp:20", "temp:25"],
-    ["buy:200", "sell:50", "buy:30", "sell:10"],
-    ["login", "logout", "error"]
+        ["temp:20", "temp:25"],
+        ["buy:200", "sell:50", "buy:30", "sell:10"],
+        ["login", "logout", "error"]
     ]
 
     processor.process_all(batches)
