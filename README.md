@@ -57,8 +57,8 @@ Dentro de Cursus se encuentran estos contenidos:
    - Module04 🔄
    - Module05 🔄
    ------------
-   - Module06
-   - Module07
+   - Module06 🔄
+   - Module07 🔄
    - Module08
    - Module09
    - Module10
