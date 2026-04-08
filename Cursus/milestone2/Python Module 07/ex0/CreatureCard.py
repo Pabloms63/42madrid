@@ -1,9 +1,10 @@
-from Card import Card
-from typing import Dict, Any
+from ex0.Card import Card
+from typing import Any
 
 
 class CreatureCard(Card):
-    def __init__(self, name: str, cost: int, rarity: str, attack: int, health: int):
+    def __init__(
+            self, name: str, cost: int, rarity: str, attack: int, health: int):
         super().__init__(name, cost, rarity)
 
         if attack <= 0 or health <= 0:
@@ -12,14 +13,14 @@ class CreatureCard(Card):
         self.attack = attack
         self.health = health
 
-    def play(self) -> Dict:
+    def play(self, game_state: dict) -> dict:
         return {
             "card_played": self.name,
             "mana_used": self.cost,
             "effect": "Creature summoned to battlefield"
         }
-    
-    def attack_target(self, target: Any) -> Dict:
+
+    def attack_target(self, target: Any) -> dict:
         target_name = getattr(target, "name", str(target))
 
         return {

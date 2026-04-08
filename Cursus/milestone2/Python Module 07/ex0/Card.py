@@ -1,6 +1,5 @@
 from abc import ABC, abstractmethod
 from enum import Enum
-from typing import Dict
 
 
 class Rarity(Enum):
@@ -21,7 +20,7 @@ class Card(ABC):
             raise ValueError(f"Invalid rarity: {rarity}")
 
     @abstractmethod
-    def play(self, game_state: Dict) -> dict:
+    def play(self, game_state: dict) -> dict:
         pass
 
     def get_card_info(self) -> dict:
