@@ -5,10 +5,10 @@ from ex2.Magical import Magical
 
 class EliteCard(Card, Combatable, Magical):
     def __init__(
-            self, name: str, cost: int, rarity: str, 
+            self, name: str, cost: int, rarity: str,
             damage: int, combat_type: str,
             health: int, defense: int, mana: int
-            ):
+    ):
         super().__init__(name, cost, rarity)
         self.damage = damage
         self.combat_type = combat_type
@@ -23,9 +23,9 @@ class EliteCard(Card, Combatable, Magical):
             "cost": self.cost,
             "rarity": self.rarity
         }
-    
+
     # Heredada por Combatable
-    def attack(self, target) -> dict:
+    def attack(self, target: str) -> dict:
         return {
             "attacker": self.name,
             "target": target,
@@ -46,7 +46,7 @@ class EliteCard(Card, Combatable, Magical):
             "damage_blocked": damage_blocked,
             "still_alive": self.health > 0
         }
-    
+
     # Heredada por Combatable
     def get_combat_stats(self) -> dict:
         return {
@@ -84,7 +84,7 @@ class EliteCard(Card, Combatable, Magical):
             "channeled": amount,
             "total_mana": self.mana
         }
-    
+
     # Heredada por Magical
     def get_magic_stats(self) -> dict:
         return {

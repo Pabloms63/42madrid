@@ -12,4 +12,4 @@ class Magical(ABC):
 
     @abstractmethod
     def get_magic_stats(self) -> dict:
-	    pass
+        pass
