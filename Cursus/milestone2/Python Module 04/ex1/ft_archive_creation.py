@@ -1,24 +1,44 @@
-def main() -> None:
-    print("=== CYBER ARCHIVES - PRESERVATION SYSTEM ===\n")
-    new_file = "new_discovery.txt"
-    print(f"Initializing new storage unit: {new_file}")
+import sys
+import typing
+
+
+def recover_data(file_name: str) -> None:
+    print("=== Cyber Archives Recovery & Preservation ===")
+    print(f"Accessing file {file_name}")
+    file_handle: typing.IO
+    print("---\n")
 
     try:
-        print("Storage unit created successfully...\n")
-        print("Inscribing preservation data...")
-        file = open(new_file, "w")
-        file.write("[ENTRY 001] New quantum algorithm discovered\n")
-        file.write("[ENTRY 002] Efficiency increased by 347%\n")
-        file.write("[ENTRY 003] Archived by Data Archivist trainee")
-        print("[ENTRY 001] New quantum algorithm discovered")
-        print("[ENTRY 002] Efficiency increased by 347%")
-        print("[ENTRY 003] Archived by Data Archivist trainee")
-        file.close()
-        print("\nData inscription complete. Storage unit sealed.")
-        print(f"Archive '{new_file}' ready for long-term preservation.")
-    except Exception:
-        print("ERROR: Failed to create storage unit.")
+        file_handle = open(file_name, "r")
+        data = file_handle.read()
+        print(data, end="")
+        file_handle.close()
+
+        print("\n---")
+        print(f"File '{file_name}' closed.")
+
+        print("\nTransfom data:")
+        print("---")
+
+        transformed_data = data.replace('\n', '#\n')
+        print(transformed_data, end="")
+        
+        print("\n---")
+        new_name = input("Enter new file name (or empty):")
+        if not new_name:
+            print("Not saving data.")
+        else:
+            print(f"Saving data to '{new_name}'")
+            write_handle = open(new_name, "w")
+            write_handle.write(transformed_data)
+            write_handle.close()
+            print(f"Data saved in file '{new_name}'")
+    except (FileNotFoundError, PermissionError) as e:
+        print(f"Error opening file {file_name}: {e}")
 
 
 if __name__ == "__main__":
-    main()
+    if len(sys.argv) != 2:
+        print("Usage: ft_ancient_text.py <file>")
+    else:
+        recover_data(sys.argv[1])

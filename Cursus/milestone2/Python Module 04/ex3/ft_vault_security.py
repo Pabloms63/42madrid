@@ -1,40 +1,29 @@
-def main() -> None:
-    print("=== CYBER ARCHIVES - VAULT SECURITY SYSTEM ===\n")
-    print("Initiating secure vault access...")
-
-    # EXTRACCIÓN (LECTURA)
+def secure_archive(file_name: str, act: int, string: str = "") -> (True | False, str):
     try:
-        with open("classified_data.txt", "r") as file:
-            print("Vault connection established with failsafe protocols\n")
-            print("SECURE EXTRACTION:")
-
-            data = file.read()
-            print(data.strip())
-
-    except FileNotFoundError:
-        print("[ERROR] classified_data.txt not found")
-        data = ""
-
-    # PRESERVACIÓN (LECTURA + ESCRITURA)
-    try:
-        with open("security_protocols.txt", "r") as file:
-            print("\nSECURE PRESERVATION:")
-
-            protocols = file.read()
-            print(protocols.strip())
-
-        # AQUÍ USAS WRITE (clave)
-        with open("vault_log.txt", "w") as log:
-            log.write(data)
-            log.write("\n")
-            log.write(protocols)
-
-    except FileNotFoundError:
-        print("[ERROR] security_protocols.txt not found")
-
-    print("Vault automatically sealed upon completion\n")
-    print("All vault operations completed with maximum security.")
+        if act == 1:
+            with open(file_name, "r") as f:
+                content = f.read()
+            return (True, content)
+        elif act == 2:
+            with open(file_name, "w") as w:
+                w.write(string)
+            return (True, "Content successfully written to file")
+        return (False, "Invalid action requested")
+    except (FileNotFoundError, PermissionError) as e:
+        return (False, f"{e}")
 
 
 if __name__ == "__main__":
-    main()
+    print("=== Cyber Archives Security ===\n")
+    
+    print("Using 'secure_archive' to read from a nonexistent file:")
+    print(secure_archive('/not/existing/file', 1))
+
+    print("\nUsing 'secure_archive' to read from an inaccessible bfile:")
+    print(secure_archive('/etc/master.passwd', 1))
+
+    print("\nUsing 'secure_archive' to read from a regular file:")
+    print(secure_archive("text.txt", 1))
+
+    print("\nUsing 'secure_archive' to write previous content to a new file:")
+    print(secure_archive("text2.txt", 2, "Content successfully written to file"))
