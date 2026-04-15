@@ -5,7 +5,6 @@ from typing import Any, List, Tuple, Union
 # Clase abstracta base
 class DataProcessor(ABC):
     def __init__(self) -> None:
-        super().__init__()
         self.data: List[Tuple[int, str]] = []
 
     @abstractmethod
