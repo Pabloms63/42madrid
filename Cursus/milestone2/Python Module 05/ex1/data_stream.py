@@ -48,12 +48,12 @@ class DataStream:
         if not self.processors:
             print("No processor found, no data")
             return
-        
+
         for p in self.processors:
             print(f"{type(p).__name__}: ", end="")
             print(f"total {p.next} items processed, ", end="")
             print(f"remaining {len(p.data)} on processor")
-    
+
 
 class NumericProcessor(DataProcessor):
     def validate(self, data: Any) -> bool:
@@ -128,7 +128,7 @@ class LogProcessor(DataProcessor):
                 self.data.append((self.next, log_formatted))
                 self.next += 1
         except Exception as e:
-            raise RuntimeError(f"Log ingestion error: {e}")   
+            raise RuntimeError(f"Log ingestion error: {e}")
 
 
 if __name__ == "__main__":
@@ -139,8 +139,14 @@ if __name__ == "__main__":
         'Hello world',
         [3.14, -1, 2.71],
         [
-            {'log_level': 'WARNING', 'log_message': 'Telnet access! Use ssh instead'}, 
-            {'log_level': 'INFO', 'log_message': 'User wil is connected'}
+            {
+                'log_level': 'WARNING',
+                'log_message': 'Telnet access! Use ssh instead'
+            },
+            {
+                'log_level': 'INFO',
+                'log_message': 'User wil is connected'
+            }
         ],
         42,
         ['Hi', 'five']
@@ -167,7 +173,10 @@ if __name__ == "__main__":
     data_stream.process_stream(data)
     data_stream.print_processors_stats()
 
-    print("\nConsume some elements from the data processors: Numeric 3, Text 2, Log 1")
+    print(
+        "\nConsume some elements from the data processors: "
+        "Numeric 3, Text 2, Log 1"
+    )
     for _ in range(3):
         num_processor.output()
     for _ in range(2):
