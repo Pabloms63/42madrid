@@ -1,0 +1,8 @@
+# Cache folder from Mypy
+__pycache__/
+.mypy_cache/
+
+# Virtual environment folder and dist/ folder
+env/
+dist/
+.zed/
