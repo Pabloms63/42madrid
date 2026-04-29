@@ -58,9 +58,9 @@ Dentro de Cursus se encuentran estos contenidos:
    - Module05 ✅
    ------------
    - Module06 ✅
-   - Module07 🔄
+   - Module07 ✅
    - Module08 🔄
-   - Module09
+   - Module09 🔄
    - Module10
    ------------
 4. 🧩 Amazing ✅
