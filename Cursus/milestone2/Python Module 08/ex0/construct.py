@@ -1,4 +1,7 @@
-import sys, os, site
+import sys
+import os
+import site
+
 
 def check_matrix() -> None:
     in_venv = sys.prefix != sys.base_prefix
@@ -6,7 +9,7 @@ def check_matrix() -> None:
     if not in_venv:
         print("\nMATRIX STATUS: You're still plugged in\n")
         print(f"Current Python: {sys.executable}")
-        print(f"Virtual Environment:  None detected")
+        print("Virtual Environment:  None detected")
         print("\nARNING: You're in the global environment!")
         print("The machines can see everything you install.")
         print("\nTo enter the construct, run:")
