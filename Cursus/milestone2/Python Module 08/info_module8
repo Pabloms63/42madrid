@@ -1,0 +1,32 @@
++ Que problemas resuelve un entorno virtual en python?
+- El caos de gestionar dependencias y versiones incompatibles entre diferentes proyectos.
+
++ ¿Cómo el programa detecta el entorno visual?
+- Lo detecta comprobando si la variable de entorno VIRTUAL_ENV está definida
+
++ Diferencia entre pip y poetry
+- Poetry es más avanzado, permite gestionar dependencias, entornos virtuales y empaquetado de proyectos en un solo lugar. 
+
++ ¿Por qué la gestion de dependencias es importante en python?
+- Porque se asegura que todas las bibliotecas externas estén presentes
+
++ ¿Cómo un programa gestiona las dependencias faltantes?
+- Mensajes de error específicos o instalación automática.
+
++ ¿Por qué las variables de entorno son importantes para la seguridad?
+- Porque permiten manejar información sensible sin exponerla directamente en el código.
+
++ Diferencia desarrollo/produccion
+-> Desarrollo: Es el entorno que usas mientras estás programando.
+-> Produccion: s el entorno real donde los usuarios finales usan la aplicación.
+
++ ¿Qué es python-dotenv?
+- Herramienta que facilita la gestión de variables de entorno.
+
++ ¿Cómo un programa maneja configuracin faltante?
+- Usando valores por defecto o capturando errores.
+
++ El rol de python-dotenv in loading .env files
+- La librería python-dotenv se encarga de leer y cargar automáticamente variables de entorno definidas en un archivo .env
+
+
