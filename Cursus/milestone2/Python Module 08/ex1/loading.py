@@ -6,7 +6,6 @@ def check_dependencies() -> bool:
     print("\nLOADING STATUS: Loading programs...\n")
 
     print("Checking dependencies:")
-    
     all_ok = True
     for p in packages:
         try:
@@ -23,8 +22,25 @@ def check_dependencies() -> bool:
     return True
 
 
-def analyze_matrix():
+def analyze_matrix() -> None:
+    import numpy as np
+    import pandas as pd
+    import matplotlib.pyplot as plt
     print("Analyzing Matrix data...")
+    print("\nmAnalyzing Matrix data...")
+    print("Processing 1000 data points...")
+    matrix_data = np.random.randn(1000)
+
+    df = pd.DataFrame(matrix_data, columns=['Matrix stream'])
+
+    print("Generating visualization...")
+    plt.figure(figsize=(10, 5))
+    plt.plot(df, color='green')
+    plt.title("Matrix Data Analysis")
+
+    plt.savefig("matrix_analysis.png")
+    print("\nAnalysis complete!")
+    print("Results saved to: matrix_analysis.png")
 
 
 if __name__ == "__main__":
