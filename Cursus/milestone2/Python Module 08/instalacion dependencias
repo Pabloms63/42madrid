@@ -1,0 +1,36 @@
+=== Instalar dependencias con pyproject.toml ===
+- poetry config virtualenvs.in-project true --local
+- python3 -m pip install --user poetry
+- poetry install
+- poetry run python loading.py
+
+=== Instalarlas con requirements.txt ===
+- pip install -r requirements.txt
+
+-----------------------------------------------------------------------------------------------------------------------------------------
+
+=== Ejecución/Compilacion ex3 ===
+- python -m pip install --upgrade pip
+- python -m pip install python-dotenv
+- cp .env.example .env
+- python oracle.py
+
+-----------------------------------------------------------------------------------------------------------------------------------------
+
+INFORMACIÓN MODULE 08 - PYTHON
+
+=== Librería numpy ===
+- Biblioteca fundamental para la computación científica y análisis de datos en Python
+
+=== Librería pandas ===
+- Biblioteca de código abierto para Python diseñada para la manipulación y el análisis de datos de alto rendimiento
+
+=== Librería requests ===
+- Biblioteca de Python, popular y fácil de usar, diseñada para realizar peticiones HTTP (GET, POST, PUT, DELETE, etc.) de manera sencilla
+
+=== Submodulo pyplot ===
+- Es un submódulo de la biblioteca Matplotlib en Python que proporciona una interfaz procedimental diseñada para recordar a MATLAB
+
+=== Submodulo python-load_dotenv ===
+-Se utiliza para leer pares clave-valor desde un archivo llamado .env y establecerlos como variables de entorno. 
+

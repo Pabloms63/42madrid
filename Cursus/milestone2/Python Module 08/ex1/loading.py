@@ -1,7 +1,8 @@
 import importlib.metadata
 
+
 def check_dependencies() -> bool:
-    packages = ["pandas", "numpy", "requests", "matplotlib"]
+    packages = ["pandas", "numpy", "matplotlib"]
 
     print("\nLOADING STATUS: Loading programs...\n")
 
@@ -26,8 +27,7 @@ def analyze_matrix() -> None:
     import numpy as np
     import pandas as pd
     import matplotlib.pyplot as plt
-    print("Analyzing Matrix data...")
-    print("\nmAnalyzing Matrix data...")
+    print("\nAnalyzing Matrix data...")
     print("Processing 1000 data points...")
     matrix_data = np.random.randn(1000)
 

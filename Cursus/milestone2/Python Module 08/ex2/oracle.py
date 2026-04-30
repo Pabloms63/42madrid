@@ -2,7 +2,7 @@ import os
 from dotenv import load_dotenv
 
 
-def load_config():
+def load_config() -> dict[str, str | None]:
     load_dotenv()
 
     return {
@@ -14,7 +14,7 @@ def load_config():
     }
 
 
-def main():
+def main() -> None:
     config = load_config()
 
     mode = config.get("MATRIX_MODE") or "development"
@@ -37,7 +37,6 @@ def main():
 
     print("\nEnvironment security check:")
 
-    # checks estilo subject
     if config.get("API_KEY") and config["API_KEY"] != "your_api_key_here":
         print("[OK] No hardcoded secrets detected")
     else:
