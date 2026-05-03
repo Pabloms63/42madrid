@@ -50,7 +50,7 @@ def station_validation() -> None:
     try:
         station_invalid = SpaceStation(
             station_id="ISS01", name="International Space Station",
-            is_operational=True, crew_size=6, power_level=101,
+            is_operational=True, crew_size=21, power_level=85.5,
             oxygen_level=92.3,
             last_maintenance=datetime(2026, 4, 25, 14, 30, 0),
             notes="All systems nominal"
