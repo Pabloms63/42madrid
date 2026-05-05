@@ -1,5 +1,4 @@
 from collections.abc import Callable
-from typing import Any
 
 
 def spell_combiner(spell1: Callable, spell2: Callable) -> Callable:
@@ -53,5 +52,4 @@ if __name__ == "__main__":
     party_spells = spell_sequence([fireball, heal, fireball])
     results = party_spells("Hydra", 100)
     for res in results:
-       print(f"Sequence: {res}")
-	
+        print(f"Sequence: {res}")

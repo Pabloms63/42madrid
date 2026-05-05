@@ -40,6 +40,8 @@ if __name__ == "__main__":
     for a in sorted_arts:
         print(f"{a['name']} ({a['power']} power)")
 
+    print(power_filter(sorted_arts, ))
+
     print("\nTesting spell transformer...")
     spells = ["fireball", "heal", "shield"]
     print(" ".join(spell_transformer(spells)))
