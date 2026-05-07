@@ -65,8 +65,6 @@ Dentro de Cursus se encuentran estos contenidos:
    - Module09: Libreria pydantic para la validación de datos.
    - Module10: Higher order functions, decoradores y lambdas.
 
-   ------------
-
 4. 🧩 A-Maze-Ing: ✅
    Proyecto en Python que genera laberintos de forma algorítmica, calcula el camino más corto hasta la salida
    mediante algoritmos de pathfinding y lo representa visualmente en tiempo real. (Python)
