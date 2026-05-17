@@ -1,4 +1,4 @@
-def to_base_36(number: int) -> str:
+def from_decimal(number: int, base: int) -> str:
     digits = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 
     if number == 0:
@@ -7,33 +7,40 @@ def to_base_36(number: int) -> str:
     result = ""
 
     while number > 0:
-        remainder = number % 36
+        remainder = number % base
         result = digits[remainder] + result
-        number //= 36
+        number //= base
 
     return result
 
+
 def number_base_converter(number: str, from_base: int, to_base: int) -> str:
+    # Validar bases
+    if from_base < 2 or from_base > 36:
+        return "ERROR"
+
+    if to_base < 2 or to_base > 36:
+        return "ERROR"
+
     try:
+        # Convertir a decimal
         number_int = int(number, from_base)
 
-        if to_base == 2:
-            return bin(number_int)[2:]
-        elif to_base == 10:
-            return str(number_int)
-        elif to_base == 16:
-            return hex(number_int)[2:].upper()
-        elif to_base == 36:
-            return to_base_36(number_int)
+        # Convertir desde decimal a la base destino
+        return from_decimal(number_int, to_base)
+
     except ValueError:
         return "ERROR"
 
+
 if __name__ == "__main__":
-    print(number_base_converter("1010", 2, 10))
-    print(number_base_converter("FF", 16, 10))
-    print(number_base_converter("255", 10, 16))
-    print(number_base_converter("123", 10, 2))
-    print(number_base_converter("Z", 36, 10))
-    print(number_base_converter("35", 10, 36))
-    print(number_base_converter("123", 1, 10))
-    print(number_base_converter("G", 16, 10))
+    print(number_base_converter("1010", 2, 10))   # 10
+    print(number_base_converter("FF", 16, 10))    # 255
+    print(number_base_converter("255", 10, 16))   # FF
+    print(number_base_converter("255", 10, 8))    # 377
+    print(number_base_converter("123", 10, 2))    # 1111011
+    print(number_base_converter("Z", 36, 10))     # 35
+    print(number_base_converter("35", 10, 36))    # Z
+    print(number_base_converter("100", 10, 3))    # 10201
+    print(number_base_converter("123", 1, 10))    # ERROR
+    print(number_base_converter("G", 16, 10))     # ERROR
