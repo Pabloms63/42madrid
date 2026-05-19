@@ -23,11 +23,37 @@ typedef struct s_dongle
 {
 	pthread_mutex_t	mutex;
 	int				available;
-	long			cooldow_until;
+	long			cooldown_until;
 }	t_dongle;
 
 typedef struct s_data	t_data;
 
+typedef struct s_coder
+{
+	int			id;
+	pthread_t	thread;
 
+	t_dongle	*left;
+	t_dongle	*right;
+
+	t_data		*data;
+}	t_coder;
+
+typedef struct s_data
+{
+	int				num_coders;
+
+	long			time_to_burnout;
+	long			time_to_compile;
+	long			time_to_debug;
+	long			time_to_refactor;
+
+	int				stop;
+
+	pthread_mutex_t	long_mutex;
+
+	t_dongle		*dongles;
+	t_coder			*coders;
+}	t_data;
 
 #endif
