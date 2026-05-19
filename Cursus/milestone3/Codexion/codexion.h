@@ -1,32 +1,31 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_lstadd_back.c                                   :+:      :+:    :+:   */
+/*   codexion.h                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: pmarcos- <pmarcos-@student.42madrid.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/10/20 20:43:26 by pmarcos-          #+#    #+#             */
-/*   Updated: 2025/10/20 20:51:57 by pmarcos-         ###   ########.fr       */
+/*   Created: 2026/05/19 14:15:03 by pmarcos-          #+#    #+#             */
+/*   Updated: 2026/05/19 14:15:03 by pmarcos-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "libft.h"
+#ifndef CODEXION_H
+# define CODEXION_H
 
-void	ft_lstadd_back(t_list **lst, t_list *new)
+# include <pthread.h>
+# include <sys/time.h>
+# include <unistd.h>
+# include <stdlib.h>
+# include <stdio.h>
+
+typedef struct s_dongle
 {
-	t_list	*node;
+	pthread_mutex_t	mutex;
+	int				available;
+	long			cooldow_until;
+}	t_dongle;
 
-	if (!lst || !new)
-		return ;
-	if (*lst == NULL)
-	{
-		*lst = new;
-		return ;
-	}
-	node = *lst;
-	while (node -> next != NULL)
-	{
-		node = node -> next;
-	}
-	node -> next = new;
-}
+typedef struct s_data t_data;
+
+#endif

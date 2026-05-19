@@ -1,7 +1,7 @@
 def string_permutation_checker(s1: str, s2: str) -> bool:
     if len(s1) != len(s2):
         return False
-
+    
     freq1 = {}
     freq2 = {}
 
@@ -17,7 +17,6 @@ def string_permutation_checker(s1: str, s2: str) -> bool:
         else:
             freq2[char] = 1
 
-    print(freq1, freq2)
     return freq1 == freq2
 
 

@@ -15,7 +15,6 @@ def from_decimal(number: int, base: int) -> str:
 
 
 def number_base_converter(number: str, from_base: int, to_base: int) -> str:
-    # Validar bases
     if from_base < 2 or from_base > 36:
         return "ERROR"
 
@@ -23,12 +22,8 @@ def number_base_converter(number: str, from_base: int, to_base: int) -> str:
         return "ERROR"
 
     try:
-        # Convertir a decimal
         number_int = int(number, from_base)
-
-        # Convertir desde decimal a la base destino
         return from_decimal(number_int, to_base)
-
     except ValueError:
         return "ERROR"
 
