@@ -26,6 +26,8 @@ typedef struct s_dongle
 	long			cooldow_until;
 }	t_dongle;
 
-typedef struct s_data t_data;
+typedef struct s_data	t_data;
+
+
 
 #endif
