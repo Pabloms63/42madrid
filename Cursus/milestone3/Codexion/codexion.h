@@ -56,4 +56,8 @@ typedef struct s_data
 	t_coder			*coders;
 }	t_data;
 
+long	get_time_ms(void);
+
+void	ft_usleep(long ms);
+
 #endif
