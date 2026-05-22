@@ -36,6 +36,9 @@ typedef struct s_coder
 	t_dongle	*left;
 	t_dongle	*right;
 
+	long		last_compile;
+	int			compile_count;
+
 	t_data		*data;
 }	t_coder;
 
@@ -47,17 +50,39 @@ typedef struct s_data
 	long			time_to_compile;
 	long			time_to_debug;
 	long			time_to_refactor;
+	long			dongle_cooldown;
+
+	int				required_compiles;
 
 	int				stop;
 
-	pthread_mutex_t	long_mutex;
+	long			start_time;
+
+	pthread_mutex_t	stop_mutex;
+	pthread_mutex_t	log_mutex;
 
 	t_dongle		*dongles;
 	t_coder			*coders;
 }	t_data;
 
+/* TIME */
 long	get_time_ms(void);
-
 void	ft_usleep(long ms);
+
+/* PARSE */
+int		parse_args(t_data *data, char **av);
+
+/* INIT */
+int		init_data(t_data *data);
+int		init_threads(t_data *data);
+
+/* ROUTINE */
+void	*coder_routine(void *arg);
+
+/* LOG */
+void	print_status(t_coder *coder, char *msg);
+
+/* SIMULATION */
+int		simulation_stopped(t_data *data);
 
 #endif
