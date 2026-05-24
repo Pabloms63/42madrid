@@ -3,7 +3,13 @@ NAME = codexion
 CC = cc
 CFLAGS = -Wall -Wextra -Werror -pthread
 
-SRC = main.c time.c
+SRC = main.c \
+	time.c \
+	parser.c \
+	utils.c \
+	init.c \
+	log.c \
+	routine.c
 
 OBJ = $(SRC:.c=.o)
 

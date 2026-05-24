@@ -65,6 +65,12 @@ typedef struct s_data
 	t_coder			*coders;
 }	t_data;
 
+/* UTILS */
+int		is_digit(char c);
+int		is_number(char *str);
+int		ft_strcmp(const char *s1, const char *s2);
+long	ft_atol(char *str);
+
 /* TIME */
 long	get_time_ms(void);
 void	ft_usleep(long ms);
