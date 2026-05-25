@@ -6,7 +6,7 @@
 /*   By: pmarcos- <pmarcos-@student.42madrid.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/24 18:09:53 by pmarcos-          #+#    #+#             */
-/*   Updated: 2026/05/24 20:49:51 by pmarcos-         ###   ########.fr       */
+/*   Updated: 2026/05/25 11:13:07 by pmarcos-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,6 @@ int	parse_args(t_data *data, char **av)
 {
 	if (validate_args(av))
 		return (1);
-
 	data -> num_coders = ft_atol(av[1]);
 	data -> time_to_burnout = ft_atol(av[2]);
 	data -> time_to_compile = ft_atol(av[3]);
