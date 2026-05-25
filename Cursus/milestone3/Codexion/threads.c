@@ -1,45 +1,32 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   main.c                                             :+:      :+:    :+:   */
+/*   threads.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: pmarcos- <pmarcos-@student.42madrid.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/05/21 14:12:19 by pmarcos-          #+#    #+#             */
-/*   Updated: 2026/05/25 12:55:19 by pmarcos-         ###   ########.fr       */
+/*   Created: 2026/05/25 12:30:52 by pmarcos-          #+#    #+#             */
+/*   Updated: 2026/05/25 12:50:36 by pmarcos-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "codexion.h"
 
-int	main(int ac, char **av)
+int	init_threads(t_data *data)
 {
-	t_data	data;
-	int		i;
+	int	i;
 
-	if (ac != 9)
-	{
-		printf("Invalid arguments\n");
-		return (1);
-	}
-	if (parse_args(&data, av))
-	{
-		printf("Error: invalid input\n");
-		return (1);
-	}
-	if (init_data(&data))
-	{
-		printf("Init failed\n");
-		return (1);
-	}
-	data.start_time = get_time_ms();
-	if (init_threads(&data))
-		return (1);
 	i = 0;
-	while (i < data.num_coders)
+	while (i < data -> num_coders)
 	{
-		pthread_join(data.coders[i].thread, NULL);
+		if (pthread_create(
+				&data -> coders[i].thread,
+				NULL,
+				coder_routine,
+				&data -> coders[i]))
+			return (1);
 		i++;
 	}
 	return (0);
 }
+

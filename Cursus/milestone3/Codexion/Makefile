@@ -9,7 +9,10 @@ SRC = main.c \
 	utils.c \
 	init.c \
 	log.c \
-	routine.c
+	routine.c \
+	simulation.c \
+	threads.c \
+	monitor.c
 
 OBJ = $(SRC:.c=.o)
 
