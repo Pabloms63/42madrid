@@ -6,7 +6,7 @@
 /*   By: pmarcos- <pmarcos-@student.42madrid.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/25 12:22:27 by pmarcos-          #+#    #+#             */
-/*   Updated: 2026/05/25 12:30:20 by pmarcos-         ###   ########.fr       */
+/*   Updated: 2026/05/28 14:16:21 by pmarcos-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,6 +21,7 @@ static void	compile(t_coder *coder)
 	coder -> last_compile = get_time_ms();
 	print_status(coder, "is compiling");
 	ft_usleep(coder -> data -> time_to_compile);
+	coder -> compile_count++;
 	pthread_mutex_unlock(&coder -> left -> mutex);
 	pthread_mutex_unlock(&coder -> right -> mutex);
 }
