@@ -6,7 +6,7 @@
 /*   By: pmarcos- <pmarcos-@student.42madrid.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/21 14:12:19 by pmarcos-          #+#    #+#             */
-/*   Updated: 2026/05/25 12:55:19 by pmarcos-         ###   ########.fr       */
+/*   Updated: 2026/05/30 00:35:21 by pmarcos-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,11 +35,16 @@ int	main(int ac, char **av)
 	data.start_time = get_time_ms();
 	if (init_threads(&data))
 		return (1);
+	pthread_create(&data.monitor,
+		NULL,
+		monitor_routine,
+		&data);
 	i = 0;
 	while (i < data.num_coders)
 	{
 		pthread_join(data.coders[i].thread, NULL);
 		i++;
 	}
+	pthread_join(data.monitor, NULL);
 	return (0);
 }

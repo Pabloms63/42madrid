@@ -58,6 +58,8 @@ typedef struct s_data
 
 	long			start_time;
 
+	pthread_t		monitor;
+
 	pthread_mutex_t	stop_mutex;
 	pthread_mutex_t	log_mutex;
 
@@ -90,5 +92,8 @@ void	print_status(t_coder *coder, char *msg);
 
 /* SIMULATION */
 int		simulation_stopped(t_data *data);
+
+/* MONITOR */
+void	*monitor_routine(void *arg);
 
 #endif
