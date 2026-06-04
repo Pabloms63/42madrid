@@ -6,7 +6,7 @@
 /*   By: pmarcos- <pmarcos-@student.42madrid.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/25 13:08:52 by pmarcos-          #+#    #+#             */
-/*   Updated: 2026/06/01 20:00:56 by pmarcos-         ###   ########.fr       */
+/*   Updated: 2026/06/04 14:44:33 by pmarcos-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,17 +19,18 @@ static int	all_finished(t_data *data)
 	i = 0;
 	while (i < data->num_coders)
 	{
-		printf("Coder %d -> %d/%d\n",
-			data->coders[i].id,
-			data->coders[i].compile_count,
-			data->required_compiles);
+		//printf("Coder %d -> %d/%d\n",
+		//	data->coders[i].id,
+		//	data->coders[i].compile_count,
+		//	data->required_compiles);
 
 		if (data->coders[i].compile_count
 			< data->required_compiles)
 			return (0);
 		i++;
 	}
-	printf("ALL FINISHED\n");
+	usleep(1000);
+	printf("\n\33[92mALL FINISHED\33[0m\n");
 	return (1);
 }
 
