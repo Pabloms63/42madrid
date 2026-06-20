@@ -6,7 +6,7 @@
 /*   By: pmarcos- <pmarcos-@student.42madrid.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/21 14:12:19 by pmarcos-          #+#    #+#             */
-/*   Updated: 2026/06/01 20:00:42 by pmarcos-         ###   ########.fr       */
+/*   Updated: 2026/06/20 21:30:30 by pmarcos-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,5 +47,7 @@ int	main(int ac, char **av)
 		i++;
 	}
 	pthread_join(data.monitor, NULL);
+	free(data.dongles);
+	free(data.coders);
 	return (0);
 }

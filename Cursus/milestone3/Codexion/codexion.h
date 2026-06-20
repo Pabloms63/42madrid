@@ -19,11 +19,24 @@
 # include <stdlib.h>
 # include <stdio.h>
 
+// EDF
+typedef struct s_request
+{
+	int					coder_id;
+	long				deadline;
+	struct s_request	*next;
+}	t_request;
+
+typedef struct s_queue
+{
+	t_request	*head;
+}	t_queue;
+
 typedef struct s_dongle
 {
 	pthread_mutex_t	mutex;
-	int				available;
 	long			cooldown_until;
+	t_queue			waitlist;
 }	t_dongle;
 
 typedef struct s_data	t_data;
@@ -58,6 +71,8 @@ typedef struct s_data
 
 	long			start_time;
 
+	char			*scheduler;
+
 	pthread_t		monitor;
 
 	pthread_mutex_t	stop_mutex;
@@ -68,32 +83,38 @@ typedef struct s_data
 }	t_data;
 
 /* UTILS */
-int		is_digit(char c);
-int		is_number(char *str);
-int		ft_strcmp(const char *s1, const char *s2);
-long	ft_atol(char *str);
+int			is_digit(char c);
+int			is_number(char *str);
+int			ft_strcmp(const char *s1, const char *s2);
+long		ft_atol(char *str);
 
 /* TIME */
-long	get_time_ms(void);
-void	ft_usleep(long ms);
+long		get_time_ms(void);
+void		ft_usleep(long ms);
 
 /* PARSE */
-int		parse_args(t_data *data, char **av);
+int			parse_args(t_data *data, char **av);
 
 /* INIT */
-int		init_data(t_data *data);
-int		init_threads(t_data *data);
+int			init_data(t_data *data);
+int			init_threads(t_data *data);
 
 /* ROUTINE */
-void	*coder_routine(void *arg);
+void		*coder_routine(void *arg);
 
 /* LOG */
-void	print_status(t_coder *coder, char *msg);
+void		print_status(t_coder *coder, char *msg);
 
 /* SIMULATION */
-int		simulation_stopped(t_data *data);
+int			simulation_stopped(t_data *data);
 
 /* MONITOR */
-void	*monitor_routine(void *arg);
+void		*monitor_routine(void *arg);
+
+/* EDF */
+t_request	*create_request(int coder_id, long deadline);
+void		enqueue_request(t_queue *queue, t_request *req);
+t_request	*dequeue_request(t_queue *queue);
+void		free_queue(t_queue *queue);
 
 #endif

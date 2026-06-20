@@ -12,7 +12,8 @@ SRC = main.c \
 	routine.c \
 	simulation.c \
 	threads.c \
-	monitor.c
+	monitor.c \
+	queue.c
 
 OBJ = $(SRC:.c=.o)
 

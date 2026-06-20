@@ -6,7 +6,7 @@
 /*   By: pmarcos- <pmarcos-@student.42madrid.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/24 18:09:53 by pmarcos-          #+#    #+#             */
-/*   Updated: 2026/05/25 11:13:07 by pmarcos-         ###   ########.fr       */
+/*   Updated: 2026/06/20 21:23:16 by pmarcos-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,6 +39,7 @@ int	parse_args(t_data *data, char **av)
 	data -> time_to_refactor = ft_atol(av[5]);
 	data -> required_compiles = ft_atol(av[6]);
 	data -> dongle_cooldown = ft_atol(av[7]);
+	data -> scheduler = av[8];
 	data -> stop = 0;
 	if (data -> num_coders <= 0
 		|| data -> time_to_burnout <= 0
