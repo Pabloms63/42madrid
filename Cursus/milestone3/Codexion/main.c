@@ -6,7 +6,7 @@
 /*   By: pmarcos- <pmarcos-@student.42madrid.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/21 14:12:19 by pmarcos-          #+#    #+#             */
-/*   Updated: 2026/06/20 21:30:30 by pmarcos-         ###   ########.fr       */
+/*   Updated: 2026/06/25 18:29:38 by pmarcos-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,6 @@ int	main(int ac, char **av)
 		printf("Error: invalid input\n");
 		return (1);
 	}
-	printf("required_compiles = %d\n", data.required_compiles);
 	if (init_data(&data))
 	{
 		printf("Init failed\n");
@@ -47,7 +46,6 @@ int	main(int ac, char **av)
 		i++;
 	}
 	pthread_join(data.monitor, NULL);
-	free(data.dongles);
-	free(data.coders);
+	cleanup_data(&data);
 	return (0);
 }

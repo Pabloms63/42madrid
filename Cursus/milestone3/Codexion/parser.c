@@ -6,7 +6,7 @@
 /*   By: pmarcos- <pmarcos-@student.42madrid.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/24 18:09:53 by pmarcos-          #+#    #+#             */
-/*   Updated: 2026/06/20 21:23:16 by pmarcos-         ###   ########.fr       */
+/*   Updated: 2026/06/25 18:11:31 by pmarcos-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,11 +15,15 @@
 static int	validate_args(char **av)
 {
 	int	i;
+	long	num;
 
 	i = 1;
 	while (i <= 7)
 	{
 		if (!is_number(av[i]))
+			return (1);
+		num = ft_atol(av[i]);
+		if (num < 0)
 			return (1);
 		i++;
 	}

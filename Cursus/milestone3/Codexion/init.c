@@ -6,7 +6,7 @@
 /*   By: pmarcos- <pmarcos-@student.42madrid.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/25 11:12:37 by pmarcos-          #+#    #+#             */
-/*   Updated: 2026/06/20 22:21:05 by pmarcos-         ###   ########.fr       */
+/*   Updated: 2026/06/25 18:11:31 by pmarcos-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,4 +38,21 @@ int	init_data(t_data *data)
 		i++;
 	}
 	return (0);
+}
+
+void	cleanup_data(t_data *data)
+{
+	int	i;
+
+	i = 0;
+	while (i < data->num_coders)
+	{
+		free_queue(&data->dongles[i].waitlist);
+		pthread_mutex_destroy(&data->dongles[i].mutex);
+		i++;
+	}
+	pthread_mutex_destroy(&data->stop_mutex);
+	pthread_mutex_destroy(&data->log_mutex);
+	free(data->dongles);
+	free(data->coders);
 }

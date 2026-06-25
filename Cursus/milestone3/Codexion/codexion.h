@@ -98,6 +98,13 @@ int			parse_args(t_data *data, char **av);
 /* INIT */
 int			init_data(t_data *data);
 int			init_threads(t_data *data);
+void		cleanup_data(t_data *data);
+
+/* QUEUE */
+t_request	*create_request(int coder_id, long deadline);
+void		enqueue_request(t_queue *queue, t_request *req);
+t_request	*dequeue_request(t_queue *queue);
+void		free_queue(t_queue *queue);
 
 /* ROUTINE */
 void		*coder_routine(void *arg);
