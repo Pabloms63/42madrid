@@ -6,7 +6,7 @@
 /*   By: pmarcos- <pmarcos-@student.42madrid.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/24 18:09:53 by pmarcos-          #+#    #+#             */
-/*   Updated: 2026/06/25 18:11:31 by pmarcos-         ###   ########.fr       */
+/*   Updated: 2026/06/26 16:27:08 by pmarcos-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 
 static int	validate_args(char **av)
 {
-	int	i;
+	int		i;
 	long	num;
 
 	i = 1;

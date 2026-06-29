@@ -43,16 +43,17 @@ typedef struct s_data	t_data;
 
 typedef struct s_coder
 {
-	int			id;
-	pthread_t	thread;
+	int				id;
+	pthread_t		thread;
+	pthread_mutex_t	mutex;
 
-	t_dongle	*left;
-	t_dongle	*right;
+	t_dongle		*left;
+	t_dongle		*right;
 
-	long		last_compile;
-	int			compile_count;
+	long			last_compile;
+	int				compile_count;
 
-	t_data		*data;
+	t_data			*data;
 }	t_coder;
 
 typedef struct s_data
@@ -117,11 +118,5 @@ int			simulation_stopped(t_data *data);
 
 /* MONITOR */
 void		*monitor_routine(void *arg);
-
-/* EDF */
-t_request	*create_request(int coder_id, long deadline);
-void		enqueue_request(t_queue *queue, t_request *req);
-t_request	*dequeue_request(t_queue *queue);
-void		free_queue(t_queue *queue);
 
 #endif

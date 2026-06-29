@@ -6,7 +6,7 @@
 /*   By: pmarcos- <pmarcos-@student.42madrid.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/25 13:08:52 by pmarcos-          #+#    #+#             */
-/*   Updated: 2026/06/04 14:44:33 by pmarcos-         ###   ########.fr       */
+/*   Updated: 2026/06/26 16:29:57 by pmarcos-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,11 +19,6 @@ static int	all_finished(t_data *data)
 	i = 0;
 	while (i < data->num_coders)
 	{
-		//printf("Coder %d -> %d/%d\n",
-		//	data->coders[i].id,
-		//	data->coders[i].compile_count,
-		//	data->required_compiles);
-
 		if (data->coders[i].compile_count
 			< data->required_compiles)
 			return (0);
@@ -52,19 +47,22 @@ void	*monitor_routine(void *arg)
 		i = 0;
 		while (i < data -> num_coders)
 		{
+			pthread_mutex_lock(&data->coders[i].mutex);
 			if (get_time_ms() - data -> coders[i].last_compile
 				> data -> time_to_burnout)
 			{
+				pthread_mutex_unlock(&data->coders[i].mutex);
 				pthread_mutex_lock(&data -> stop_mutex);
 				data -> stop = 1;
 				pthread_mutex_unlock(&data -> stop_mutex);
 				pthread_mutex_lock(&data -> log_mutex);
-				printf("%ld %d burned out\n",
+				printf("%ld %d \033[31mburned out\033[0m\n",
 					get_time_ms() - data -> start_time,
 					data -> coders[i].id);
 				pthread_mutex_unlock(&data -> log_mutex);
 				return (NULL);
 			}
+			pthread_mutex_unlock(&data->coders[i].mutex);
 			i++;
 		}
 		if (all_finished(data))

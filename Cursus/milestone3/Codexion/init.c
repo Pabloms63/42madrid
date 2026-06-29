@@ -6,7 +6,7 @@
 /*   By: pmarcos- <pmarcos-@student.42madrid.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/25 11:12:37 by pmarcos-          #+#    #+#             */
-/*   Updated: 2026/06/25 18:11:31 by pmarcos-         ###   ########.fr       */
+/*   Updated: 2026/06/26 16:01:08 by pmarcos-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,6 +28,7 @@ int	init_data(t_data *data)
 		pthread_mutex_init(&data -> dongles[i].mutex, NULL);
 		data -> dongles[i].waitlist.head = NULL;
 		data -> dongles[i].cooldown_until = 0;
+		pthread_mutex_init(&data -> coders[i].mutex, NULL);
 		data -> coders[i].id = i + 1;
 		data -> coders[i].left = &data -> dongles[i];
 		data -> coders[i].right
@@ -49,6 +50,7 @@ void	cleanup_data(t_data *data)
 	{
 		free_queue(&data->dongles[i].waitlist);
 		pthread_mutex_destroy(&data->dongles[i].mutex);
+		pthread_mutex_destroy(&data->coders[i].mutex);
 		i++;
 	}
 	pthread_mutex_destroy(&data->stop_mutex);

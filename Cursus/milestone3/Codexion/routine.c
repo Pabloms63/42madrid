@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   routine_new.c                                      :+:      :+:    :+:   */
+/*   routine.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: pmarcos- <pmarcos-@student.42madrid.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/25 12:22:27 by pmarcos-          #+#    #+#             */
-/*   Updated: 2026/06/25 18:13:39 by pmarcos-         ###   ########.fr       */
+/*   Updated: 2026/06/26 16:45:27 by pmarcos-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,6 @@ static int	can_acquire_dongle(t_dongle *dongle, int coder_id, char *scheduler)
 
 	if (get_time_ms() < dongle->cooldown_until)
 		return (0);
-	
 	if (ft_strcmp(scheduler, "fifo") == 0)
 		return (1);
 	else
@@ -46,7 +45,7 @@ static void	add_to_queue_edf(t_dongle *dongle, int coder_id, long deadline)
 		req->deadline = deadline;
 }
 
-static int	try_acquire_dongle(t_dongle *dongle, int coder_id, 
+static int	try_acquire_dongle(t_dongle *dongle, int coder_id,
 								long deadline, char *scheduler)
 {
 	int	acquired;
@@ -55,14 +54,12 @@ static int	try_acquire_dongle(t_dongle *dongle, int coder_id,
 	pthread_mutex_lock(&dongle->mutex);
 	if (ft_strcmp(scheduler, "edf") == 0)
 		add_to_queue_edf(dongle, coder_id, deadline);
-	
 	if (can_acquire_dongle(dongle, coder_id, scheduler))
 	{
 		if (ft_strcmp(scheduler, "edf") == 0)
-			dequeue_request(&dongle->waitlist);
+			free(dequeue_request(&dongle->waitlist));
 		acquired = 1;
 	}
-	
 	if (!acquired)
 		pthread_mutex_unlock(&dongle->mutex);
 	return (acquired);
@@ -77,59 +74,92 @@ static void	release_dongle(t_dongle *dongle)
 static void	compile(t_coder *coder)
 {
 	long	deadline;
+	int		left_acquired;
+	int		right_acquired;
 
 	deadline = coder->last_compile + coder->data->time_to_burnout;
-	
-	if (coder->id % 2 == 0)
+	left_acquired = 0;
+	right_acquired = 0;
+	if (coder->data->num_coders == 1)
 	{
-		while (!try_acquire_dongle(coder->right, coder->id, deadline,
-									coder->data->scheduler) 
+		while (!try_acquire_dongle(coder->left, coder->id, deadline,
+				coder->data->scheduler)
 			&& !simulation_stopped(coder->data))
 			ft_usleep(1);
 		if (simulation_stopped(coder->data))
 			return ;
-		print_status(coder, "has taken a dongle");
-		
+		pthread_mutex_lock(&coder->mutex);
+		coder->last_compile = get_time_ms();
+		pthread_mutex_unlock(&coder->mutex);
+		print_status(coder, "\033[32mhas taken a dongle\033[0m");
+		left_acquired = 1;
+		print_status(coder, "\033[33mis compiling\033[0m");
+		ft_usleep(coder->data->time_to_compile);
+		pthread_mutex_lock(&coder->mutex);
+		coder->compile_count++;
+		pthread_mutex_unlock(&coder->mutex);
+		if (left_acquired)
+			release_dongle(coder->left);
+		return ;
+	}
+	if (coder->id % 2 == 0)
+	{
+		while (!try_acquire_dongle(coder->right, coder->id, deadline,
+				coder->data->scheduler)
+			&& !simulation_stopped(coder->data))
+			ft_usleep(1);
+		if (simulation_stopped(coder->data))
+			return ;
+		right_acquired = 1;
+		print_status(coder, "\033[32mhas taken a dongle\033[0m");
 		while (!try_acquire_dongle(coder->left, coder->id, deadline,
-									coder->data->scheduler)
+				coder->data->scheduler)
 			&& !simulation_stopped(coder->data))
 			ft_usleep(1);
 		if (simulation_stopped(coder->data))
 		{
-			release_dongle(coder->right);
+			if (right_acquired)
+				release_dongle(coder->right);
 			return ;
 		}
-		print_status(coder, "has taken a dongle");
+		left_acquired = 1;
+		print_status(coder, "\033[32mhas taken a dongle\033[0m");
 	}
 	else
 	{
 		while (!try_acquire_dongle(coder->left, coder->id, deadline,
-									coder->data->scheduler)
+				coder->data->scheduler)
 			&& !simulation_stopped(coder->data))
 			ft_usleep(1);
 		if (simulation_stopped(coder->data))
 			return ;
-		print_status(coder, "has taken a dongle");
-		
+		left_acquired = 1;
+		print_status(coder, "\033[32mhas taken a dongle\033[0m");
 		while (!try_acquire_dongle(coder->right, coder->id, deadline,
-									coder->data->scheduler)
+				coder->data->scheduler)
 			&& !simulation_stopped(coder->data))
 			ft_usleep(1);
 		if (simulation_stopped(coder->data))
 		{
-			release_dongle(coder->left);
+			if (left_acquired)
+				release_dongle(coder->left);
 			return ;
 		}
-		print_status(coder, "has taken a dongle");
+		right_acquired = 1;
+		print_status(coder, "\033[32mhas taken a dongle\033[0m");
 	}
-	
+	pthread_mutex_lock(&coder->mutex);
 	coder->last_compile = get_time_ms();
-	print_status(coder, "is compiling");
+	pthread_mutex_unlock(&coder->mutex);
+	print_status(coder, "\033[33mis compiling\033[0m");
 	ft_usleep(coder->data->time_to_compile);
+	pthread_mutex_lock(&coder->mutex);
 	coder->compile_count++;
-	
-	release_dongle(coder->left);
-	release_dongle(coder->right);
+	pthread_mutex_unlock(&coder->mutex);
+	if (left_acquired)
+		release_dongle(coder->left);
+	if (right_acquired)
+		release_dongle(coder->right);
 }
 
 void	*coder_routine(void *arg)
@@ -137,17 +167,19 @@ void	*coder_routine(void *arg)
 	t_coder	*coder;
 
 	coder = (t_coder *)arg;
+	pthread_mutex_lock(&coder->mutex);
 	coder->last_compile = get_time_ms();
+	pthread_mutex_unlock(&coder->mutex);
 	while (!simulation_stopped(coder->data))
 	{
 		compile(coder);
 		if (simulation_stopped(coder->data))
 			break ;
-		print_status(coder, "is debugging");
+		print_status(coder, "\033[34mis debugging\033[0m");
 		ft_usleep(coder->data->time_to_debug);
 		if (simulation_stopped(coder->data))
 			break ;
-		print_status(coder, "is refactoring");
+		print_status(coder, "\033[35mis refactoring\033[0m");
 		ft_usleep(coder->data->time_to_refactor);
 	}
 	return (NULL);

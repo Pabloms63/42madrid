@@ -2,6 +2,7 @@ NAME = codexion
 
 CC = cc
 CFLAGS = -Wall -Wextra -Werror -pthread
+RM = rm -f
 
 SRC = main.c \
 	time.c \
@@ -22,10 +23,13 @@ all: $(NAME)
 $(NAME): $(OBJ)
 	$(CC) $(CFLAGS) $(OBJ) -o $(NAME)
 
+
+.PHONY: all clean fclean re
+
 clean:
-	rm -f $(OBJ)
+	$(RM) $(OBJ)
 
 fclean: clean
-	rm -f $(NAME)
+	$(RM) $(NAME)
 
 re: fclean all
