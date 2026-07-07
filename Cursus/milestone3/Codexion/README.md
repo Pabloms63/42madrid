@@ -1,6 +1,6 @@
-# Codexion
 *Este proyecto ha sido creado como parte del currículo de 42 por pmarcos-.*
 
+# Codexion
 ## Descripción
 Simulador de concurrencia donde múltiples threads (programadores) compiten por recursos 
 limitados (dongles USB) usando mutexes POSIX y sincronización. Implementa dos políticas 

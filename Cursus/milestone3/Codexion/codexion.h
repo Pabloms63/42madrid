@@ -107,6 +107,12 @@ void		enqueue_request(t_queue *queue, t_request *req);
 t_request	*dequeue_request(t_queue *queue);
 void		free_queue(t_queue *queue);
 
+/* DONGLE */
+int			try_acquire_dongle(t_dongle *dongle, int coder_id,
+				long deadline, char *scheduler);
+void		release_dongle(t_dongle *dongle, long cooldown);
+int			acquire_dongle(t_coder *coder, t_dongle *dongle, long deadline);
+
 /* ROUTINE */
 void		*coder_routine(void *arg);
 
