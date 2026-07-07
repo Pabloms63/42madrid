@@ -12,7 +12,6 @@ SRC = main.c \
 	log.c \
 	routine.c \
 	simulation.c \
-	threads.c \
 	monitor.c \
 	queue.c
 
