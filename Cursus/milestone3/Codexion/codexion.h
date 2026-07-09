@@ -18,18 +18,28 @@
 # include <unistd.h>
 # include <stdlib.h>
 # include <stdio.h>
+# include <limits.h>
 
-// EDF
-typedef struct s_request
+# define QUEUE_INIT_CAPACITY 4
+
+/*
+** Heap binario (array-based min-heap) para la planificacion FIFO/EDF.
+** Cada nodo guarda el coder_id y una "key" por la que se ordena:
+**   - FIFO -> key = orden de llegada (next_seq)
+**   - EDF  -> key = deadline (last_compile_start + time_to_burnout)
+*/
+typedef struct s_heap_node
 {
-	int					coder_id;
-	long				deadline;
-	struct s_request	*next;
-}	t_request;
+	int		coder_id;
+	long	key;
+}	t_heap_node;
 
 typedef struct s_queue
 {
-	t_request	*head;
+	t_heap_node	*nodes;
+	int			size;
+	int			capacity;
+	long		next_seq;
 }	t_queue;
 
 typedef struct s_dongle
@@ -98,14 +108,25 @@ int			parse_args(t_data *data, char **av);
 
 /* INIT */
 int			init_data(t_data *data);
-int			init_threads(t_data *data);
+int			init_threads(t_data *data, int *created);
 void		cleanup_data(t_data *data);
 
-/* QUEUE */
-t_request	*create_request(int coder_id, long deadline);
-void		enqueue_request(t_queue *queue, t_request *req);
-t_request	*dequeue_request(t_queue *queue);
+/* QUEUE (heap) - queue.c */
+int			queue_init(t_queue *queue);
+int			enqueue_request(t_queue *queue, int coder_id, long key);
+int			dequeue_request(t_queue *queue, int *coder_id_out);
 void		free_queue(t_queue *queue);
+
+/* QUEUE (heap) - queue_heap.c */
+void		swap_nodes(t_heap_node *a, t_heap_node *b);
+void		sift_up(t_queue *queue, int i);
+void		sift_down(t_queue *queue, int i);
+int			heap_grow(t_queue *queue);
+
+/* QUEUE (heap) - queue_utils.c */
+int			queue_contains(t_queue *queue, int coder_id);
+void		update_key(t_queue *queue, int coder_id, long new_key);
+int			queue_peek(t_queue *queue);
 
 /* DONGLE */
 int			try_acquire_dongle(t_dongle *dongle, int coder_id,
@@ -121,6 +142,7 @@ void		print_status(t_coder *coder, char *msg);
 
 /* SIMULATION */
 int			simulation_stopped(t_data *data);
+void		stop_simulation(t_data *data);
 
 /* MONITOR */
 void		*monitor_routine(void *arg);

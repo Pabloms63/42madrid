@@ -6,13 +6,13 @@
 /*   By: pmarcos- <pmarcos-@student.42madrid.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/21 14:12:19 by pmarcos-          #+#    #+#             */
-/*   Updated: 2026/06/29 16:00:47 by pmarcos-         ###   ########.fr       */
+/*   Updated: 2026/07/09 21:05:56 by pmarcos-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "codexion.h"
 
-int	init_threads(t_data *data)
+int	init_threads(t_data *data, int *created)
 {
 	int	i;
 
@@ -24,17 +24,32 @@ int	init_threads(t_data *data)
 				NULL,
 				coder_routine,
 				&data -> coders[i]))
+		{
+			*created = i;
 			return (1);
+		}
 		i++;
 	}
+	*created = data -> num_coders;
 	return (0);
 }
 
+static void	join_coders(t_data *data, int count)
+{
+	int	i;
+
+	i = 0;
+	while (i < count)
+	{
+		pthread_join(data -> coders[i].thread, NULL);
+		i++;
+	}
+}
 
 int	main(int ac, char **av)
 {
 	t_data	data;
-	int		i;
+	int		created;
 
 	if (ac != 9)
 	{
@@ -52,18 +67,23 @@ int	main(int ac, char **av)
 		return (1);
 	}
 	data.start_time = get_time_ms();
-	if (init_threads(&data))
-		return (1);
-	pthread_create(&data.monitor,
-		NULL,
-		monitor_routine,
-		&data);
-	i = 0;
-	while (i < data.num_coders)
+	if (init_threads(&data, &created))
 	{
-		pthread_join(data.coders[i].thread, NULL);
-		i++;
+		printf("Error: coder thread creation failed\n");
+		stop_simulation(&data);
+		join_coders(&data, created);
+		cleanup_data(&data);
+		return (1);
 	}
+	if (pthread_create(&data.monitor, NULL, monitor_routine, &data))
+	{
+		printf("Error: monitor thread creation failed\n");
+		stop_simulation(&data);
+		join_coders(&data, data.num_coders);
+		cleanup_data(&data);
+		return (1);
+	}
+	join_coders(&data, data.num_coders);
 	pthread_join(data.monitor, NULL);
 	cleanup_data(&data);
 	return (0);

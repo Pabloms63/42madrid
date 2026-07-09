@@ -6,7 +6,7 @@
 /*   By: pmarcos- <pmarcos-@student.42madrid.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/24 18:22:06 by pmarcos-          #+#    #+#             */
-/*   Updated: 2026/05/24 20:49:09 by pmarcos-         ###   ########.fr       */
+/*   Updated: 2026/07/09 23:07:06 by pmarcos-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,12 +49,16 @@ long	ft_atol(char *str)
 {
 	long	result;
 	int		i;
+	int		digit;
 
 	result = 0;
 	i = 0;
 	while (str[i])
 	{
-		result = (result * 10) + (str[i] - '0');
+		digit = str[i] - '0';
+		if (result > (LONG_MAX - digit / 10))
+			return (-1);
+		result = (result * 10) + digit;
 		i++;
 	}
 	return (result);

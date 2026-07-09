@@ -6,7 +6,7 @@
 /*   By: pmarcos- <pmarcos-@student.42madrid.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/25 13:08:52 by pmarcos-          #+#    #+#             */
-/*   Updated: 2026/06/26 16:29:57 by pmarcos-         ###   ########.fr       */
+/*   Updated: 2026/07/09 21:02:56 by pmarcos-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,25 +15,21 @@
 static int	all_finished(t_data *data)
 {
 	int	i;
+	int	count;
 
 	i = 0;
 	while (i < data->num_coders)
 	{
-		if (data->coders[i].compile_count
-			< data->required_compiles)
+		pthread_mutex_lock(&data->coders[i].mutex);
+		count = data->coders[i].compile_count;
+		pthread_mutex_unlock(&data->coders[i].mutex);
+		if (count < data->required_compiles)
 			return (0);
 		i++;
 	}
 	usleep(1000);
 	printf("\n\33[92mALL FINISHED\33[0m\n");
 	return (1);
-}
-
-static void	stop_simulation(t_data *data)
-{
-	pthread_mutex_lock(&data -> stop_mutex);
-	data -> stop = 1;
-	pthread_mutex_unlock(&data -> stop_mutex);
 }
 
 void	*monitor_routine(void *arg)

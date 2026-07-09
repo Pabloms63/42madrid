@@ -14,7 +14,9 @@ SRC = main.c \
 	simulation.c \
 	dongle.c \
 	monitor.c \
-	queue.c
+	queue.c \
+	queue_heap.c \
+	queue_utils.c
 
 OBJ = $(SRC:.c=.o)
 

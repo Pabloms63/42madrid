@@ -6,58 +6,49 @@
 /*   By: pmarcos- <pmarcos-@student.42madrid.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/07/07 21:20:39 by pmarcos-          #+#    #+#             */
-/*   Updated: 2026/07/07 21:21:55 by pmarcos-         ###   ########.fr       */
+/*   Updated: 2026/07/09 20:32:58 by pmarcos-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "codexion.h"
 
-static int	can_acquire_dongle(t_dongle *dongle, int coder_id, char *scheduler)
+static void	add_to_queue(t_dongle *dongle, int coder_id,
+					long deadline, char *scheduler)
 {
-	t_request	*head;
+	long	key;
 
-	if (get_time_ms() < dongle->cooldown_until)
-		return (0);
-	if (ft_strcmp(scheduler, "fifo") == 0)
-		return (1);
-	else
+	if (queue_contains(&dongle->waitlist, coder_id))
 	{
-		head = dongle->waitlist.head;
-		if (!head || head->coder_id == coder_id)
-			return (1);
+		if (ft_strcmp(scheduler, "edf") == 0)
+			update_key(&dongle->waitlist, coder_id, deadline);
+		return ;
 	}
-	return (0);
+	if (ft_strcmp(scheduler, "edf") == 0)
+		key = deadline;
+	else
+		key = dongle->waitlist.next_seq++;
+	enqueue_request(&dongle->waitlist, coder_id, key);
 }
 
-static void	add_to_queue_edf(t_dongle *dongle, int coder_id, long deadline)
+static int	can_acquire_dongle(t_dongle *dongle, int coder_id)
 {
-	t_request	*req;
-
-	req = dongle->waitlist.head;
-	while (req && req->coder_id != coder_id)
-		req = req->next;
-	if (!req)
-	{
-		req = create_request(coder_id, deadline);
-		enqueue_request(&dongle->waitlist, req);
-	}
-	else
-		req->deadline = deadline;
+	if (get_time_ms() < dongle->cooldown_until)
+		return (0);
+	return (queue_peek(&dongle->waitlist) == coder_id);
 }
 
 int	try_acquire_dongle(t_dongle *dongle, int coder_id,
 								long deadline, char *scheduler)
 {
 	int	acquired;
+	int	served_id;
 
 	acquired = 0;
 	pthread_mutex_lock(&dongle->mutex);
-	if (ft_strcmp(scheduler, "edf") == 0)
-		add_to_queue_edf(dongle, coder_id, deadline);
-	if (can_acquire_dongle(dongle, coder_id, scheduler))
+	add_to_queue(dongle, coder_id, deadline, scheduler);
+	if (can_acquire_dongle(dongle, coder_id))
 	{
-		if (ft_strcmp(scheduler, "edf") == 0)
-			free(dequeue_request(&dongle->waitlist));
+		dequeue_request(&dongle->waitlist, &served_id);
 		acquired = 1;
 	}
 	if (!acquired)

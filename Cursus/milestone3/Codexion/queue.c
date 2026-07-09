@@ -6,65 +6,59 @@
 /*   By: pmarcos- <pmarcos-@student.42madrid.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/20 21:38:22 by pmarcos-          #+#    #+#             */
-/*   Updated: 2026/06/26 16:27:46 by pmarcos-         ###   ########.fr       */
+/*   Updated: 2026/07/09 20:31:55 by pmarcos-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "codexion.h"
-#include <stdlib.h>
 
-t_request	*create_request(int coder_id, long deadline)
+/*
+** Min-heap (array-based binary heap) usado para la planificacion
+** FIFO/EDF de los dongles.
+**   - FIFO: key = numero de secuencia de llegada (next_seq)
+**   - EDF : key = deadline (last_compile_start + time_to_burnout)
+** Los helpers internos del heap (swap/sift/grow) viven en queue_heap.c
+** y las utilidades de busqueda en queue_utils.c, para respetar el
+** limite de 5 funciones por archivo de la Norma.
+*/
+
+int	queue_init(t_queue *queue)
 {
-	t_request	*req;
-
-	req = malloc(sizeof(t_request));
-	if (!req)
-		return (NULL);
-	req -> coder_id = coder_id;
-	req -> deadline = deadline;
-	req -> next = NULL;
-	return (req);
+	queue->nodes = malloc(sizeof(t_heap_node) * QUEUE_INIT_CAPACITY);
+	if (!queue->nodes)
+		return (1);
+	queue->size = 0;
+	queue->capacity = QUEUE_INIT_CAPACITY;
+	queue->next_seq = 0;
+	return (0);
 }
 
-void	enqueue_request(t_queue *queue, t_request *req)
+int	enqueue_request(t_queue *queue, int coder_id, long key)
 {
-	t_request	*current;
-
-	if (!queue->head || queue -> head -> deadline > req -> deadline)
-	{
-		req -> next = queue -> head;
-		queue -> head = req;
-		return ;
-	}
-	current = queue -> head;
-	while (current -> next && current -> next -> deadline <= req -> deadline)
-		current = current -> next;
-	req -> next = current -> next;
-	current -> next = req;
+	if (queue->size == queue->capacity && heap_grow(queue))
+		return (1);
+	queue->nodes[queue->size].coder_id = coder_id;
+	queue->nodes[queue->size].key = key;
+	queue->size++;
+	sift_up(queue, queue->size - 1);
+	return (0);
 }
 
-t_request	*dequeue_request(t_queue *queue)
+int	dequeue_request(t_queue *queue, int *coder_id_out)
 {
-	t_request	*req;
-
-	if (!queue->head)
-		return (NULL);
-	req = queue->head;
-	queue->head = queue->head->next;
-	return (req);
+	if (queue->size == 0)
+		return (1);
+	*coder_id_out = queue->nodes[0].coder_id;
+	queue->size--;
+	queue->nodes[0] = queue->nodes[queue->size];
+	sift_down(queue, 0);
+	return (0);
 }
 
 void	free_queue(t_queue *queue)
 {
-	t_request	*current;
-	t_request	*next;
-
-	current = queue->head;
-	while (current)
-	{
-		next = current->next;
-		free(current);
-		current = next;
-	}
-	queue->head = NULL;
+	free(queue->nodes);
+	queue->nodes = NULL;
+	queue->size = 0;
+	queue->capacity = 0;
 }
