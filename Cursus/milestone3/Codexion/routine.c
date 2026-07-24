@@ -6,7 +6,7 @@
 /*   By: pmarcos- <pmarcos-@student.42madrid.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/25 12:22:27 by pmarcos-          #+#    #+#             */
-/*   Updated: 2026/07/07 21:20:37 by pmarcos-         ###   ########.fr       */
+/*   Updated: 2026/07/23 14:07:59 by pmarcos-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,12 +24,42 @@ static void	do_compile(t_coder *coder)
 	pthread_mutex_unlock(&coder->mutex);
 }
 
-static void	compile(t_coder *coder)
+static void	select_order(t_coder *coder, t_dongle **first, t_dongle **second)
 {
-	long		deadline;
-	long		cooldown;
+	if (coder->id % 2 == 0)
+	{
+		*first = coder->right;
+		*second = coder->left;
+	}
+	else
+	{
+		*first = coder->left;
+		*second = coder->right;
+	}
+}
+
+static void	compile_pair(t_coder *coder, long deadline, long cooldown)
+{
 	t_dongle	*first;
 	t_dongle	*second;
+
+	select_order(coder, &first, &second);
+	if (!acquire_dongle(coder, first, deadline))
+		return ;
+	if (!acquire_dongle(coder, second, deadline))
+	{
+		release_dongle(first, cooldown);
+		return ;
+	}
+	do_compile(coder);
+	release_dongle(first, cooldown);
+	release_dongle(second, cooldown);
+}
+
+static void	compile(t_coder *coder)
+{
+	long	deadline;
+	long	cooldown;
 
 	deadline = coder->last_compile + coder->data->time_to_burnout;
 	cooldown = coder->data->dongle_cooldown;
@@ -41,26 +71,7 @@ static void	compile(t_coder *coder)
 		release_dongle(coder->left, cooldown);
 		return ;
 	}
-	if (coder->id % 2 == 0)
-	{
-		first = coder->right;
-		second = coder->left;
-	}
-	else
-	{
-		first = coder->left;
-		second = coder->right;
-	}
-	if (!acquire_dongle(coder, first, deadline))
-		return ;
-	if (!acquire_dongle(coder, second, deadline))
-	{
-		release_dongle(first, cooldown);
-		return ;
-	}
-	do_compile(coder);
-	release_dongle(first, cooldown);
-	release_dongle(second, cooldown);
+	compile_pair(coder, deadline, cooldown);
 }
 
 void	*coder_routine(void *arg)

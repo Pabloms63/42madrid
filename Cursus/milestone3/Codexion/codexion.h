@@ -22,17 +22,13 @@
 
 # define QUEUE_INIT_CAPACITY 4
 
-/*
-** Heap binario (array-based min-heap) para la planificacion FIFO/EDF.
-** Cada nodo guarda el coder_id y una "key" por la que se ordena:
-**   - FIFO -> key = orden de llegada (next_seq)
-**   - EDF  -> key = deadline (last_compile_start + time_to_burnout)
-*/
 typedef struct s_heap_node
 {
 	int		coder_id;
 	long	key;
 }	t_heap_node;
+
+typedef struct s_data	t_data;
 
 typedef struct s_queue
 {
@@ -42,6 +38,7 @@ typedef struct s_queue
 	long		next_seq;
 }	t_queue;
 
+
 typedef struct s_dongle
 {
 	pthread_mutex_t	mutex;
@@ -49,7 +46,6 @@ typedef struct s_dongle
 	t_queue			waitlist;
 }	t_dongle;
 
-typedef struct s_data	t_data;
 
 typedef struct s_coder
 {
@@ -68,7 +64,7 @@ typedef struct s_coder
 
 typedef struct s_data
 {
-	int				num_coders;
+	long			num_coders;
 
 	long			time_to_burnout;
 	long			time_to_compile;
@@ -76,7 +72,7 @@ typedef struct s_data
 	long			time_to_refactor;
 	long			dongle_cooldown;
 
-	int				required_compiles;
+	long			required_compiles;
 
 	int				stop;
 
@@ -92,6 +88,7 @@ typedef struct s_data
 	t_dongle		*dongles;
 	t_coder			*coders;
 }	t_data;
+
 
 /* UTILS */
 int			is_digit(char c);

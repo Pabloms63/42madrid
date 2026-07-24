@@ -6,7 +6,7 @@
 /*   By: pmarcos- <pmarcos-@student.42madrid.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/21 14:12:19 by pmarcos-          #+#    #+#             */
-/*   Updated: 2026/07/09 21:05:56 by pmarcos-         ###   ########.fr       */
+/*   Updated: 2026/07/23 17:42:17 by pmarcos-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,10 +46,37 @@ static void	join_coders(t_data *data, int count)
 	}
 }
 
+static int	start_coders(t_data *data)
+{
+	int	created;
+
+	if (init_threads(data, &created))
+	{
+		printf("Error: coder thread creation failed\n");
+		stop_simulation(data);
+		join_coders(data, created);
+		cleanup_data(data);
+		return (1);
+	}
+	return (0);
+}
+
+static int	start_monitor(t_data *data)
+{
+	if (pthread_create(&data -> monitor, NULL, monitor_routine, data))
+	{
+		printf("Error: monitor thread creation failed\n");
+		stop_simulation(data);
+		join_coders(data, data -> num_coders);
+		cleanup_data(data);
+		return (1);
+	}
+	return (0);
+}
+
 int	main(int ac, char **av)
 {
 	t_data	data;
-	int		created;
 
 	if (ac != 9)
 	{
@@ -64,25 +91,12 @@ int	main(int ac, char **av)
 	if (init_data(&data))
 	{
 		printf("Init failed\n");
+		cleanup_data(&data);
 		return (1);
 	}
 	data.start_time = get_time_ms();
-	if (init_threads(&data, &created))
-	{
-		printf("Error: coder thread creation failed\n");
-		stop_simulation(&data);
-		join_coders(&data, created);
-		cleanup_data(&data);
+	if (start_coders(&data) || start_monitor(&data))
 		return (1);
-	}
-	if (pthread_create(&data.monitor, NULL, monitor_routine, &data))
-	{
-		printf("Error: monitor thread creation failed\n");
-		stop_simulation(&data);
-		join_coders(&data, data.num_coders);
-		cleanup_data(&data);
-		return (1);
-	}
 	join_coders(&data, data.num_coders);
 	pthread_join(data.monitor, NULL);
 	cleanup_data(&data);

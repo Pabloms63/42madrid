@@ -6,19 +6,59 @@
 /*   By: pmarcos- <pmarcos-@student.42madrid.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/25 11:12:37 by pmarcos-          #+#    #+#             */
-/*   Updated: 2026/07/09 20:33:40 by pmarcos-         ###   ########.fr       */
+/*   Updated: 2026/07/23 14:07:00 by pmarcos-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "codexion.h"
 
+static void	destroy_partial(t_data *data, int count)
+{
+	int	i;
+
+	i = 0;
+	while (i < count)
+	{
+		free_queue(&data->dongles[i].waitlist);
+		pthread_mutex_destroy(&data->dongles[i].mutex);
+		pthread_mutex_destroy(&data->coders[i].mutex);
+		i++;
+	}
+	free(data->dongles);
+	free(data->coders);
+}
+
+static void	init_one_coder(t_data *data, int i)
+{
+	data -> dongles[i].cooldown_until = 0;
+	pthread_mutex_init(&data -> coders[i].mutex, NULL);
+	data -> coders[i].id = i + 1;
+	data -> coders[i].left = &data -> dongles[i];
+	data -> coders[i].right
+		= &data -> dongles[(i + 1) % data -> num_coders];
+	data -> coders[i].last_compile = get_time_ms();
+	data -> coders[i].compile_count = 0;
+	data -> coders[i].data = data;
+}
+
+static int	alloc_arrays(t_data *data)
+{
+	data -> dongles = malloc(sizeof(t_dongle) * data -> num_coders);
+	data -> coders = malloc(sizeof(t_coder) * data -> num_coders);
+	if (!data -> dongles || !data -> coders)
+	{
+		free(data -> dongles);
+		free(data -> coders);
+		return (1);
+	}
+	return (0);
+}
+
 int	init_data(t_data *data)
 {
 	int	i;
 
-	data -> dongles = malloc(sizeof(t_dongle) * data -> num_coders);
-	data -> coders = malloc(sizeof(t_coder) * data -> num_coders);
-	if (!data -> dongles || !data -> coders)
+	if (alloc_arrays(data))
 		return (1);
 	pthread_mutex_init(&data -> stop_mutex, NULL);
 	pthread_mutex_init(&data -> log_mutex, NULL);
@@ -27,16 +67,12 @@ int	init_data(t_data *data)
 	{
 		pthread_mutex_init(&data -> dongles[i].mutex, NULL);
 		if (queue_init(&data -> dongles[i].waitlist))
+		{
+			pthread_mutex_destroy(&data -> dongles[i].mutex);
+			destroy_partial(data, i);
 			return (1);
-		data -> dongles[i].cooldown_until = 0;
-		pthread_mutex_init(&data -> coders[i].mutex, NULL);
-		data -> coders[i].id = i + 1;
-		data -> coders[i].left = &data -> dongles[i];
-		data -> coders[i].right
-			= &data -> dongles[(i + 1) % data -> num_coders];
-		data -> coders[i].last_compile = get_time_ms();
-		data -> coders[i].compile_count = 0;
-		data -> coders[i].data = data;
+		}
+		init_one_coder(data, i);
 		i++;
 	}
 	return (0);
