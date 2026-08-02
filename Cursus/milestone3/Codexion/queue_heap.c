@@ -6,18 +6,11 @@
 /*   By: pmarcos- <pmarcos-@student.42madrid.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/07/09 21:00:00 by pmarcos-          #+#    #+#             */
-/*   Updated: 2026/07/23 01:08:05 by pmarcos-         ###   ########.fr       */
+/*   Updated: 2026/07/28 00:13:55 by pmarcos-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "codexion.h"
-
-/*
-** Mecanica interna del min-heap: intercambio de nodos, reordenacion
-** (sift up/down) y crecimiento del array cuando se llena.
-** Usadas por enqueue_request/dequeue_request en queue.c y por
-** update_key en queue_utils.c.
-*/
 
 void	swap_nodes(t_heap_node *a, t_heap_node *b)
 {

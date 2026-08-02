@@ -6,17 +6,11 @@
 /*   By: pmarcos- <pmarcos-@student.42madrid.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/07/09 21:00:00 by pmarcos-          #+#    #+#             */
-/*   Updated: 2026/07/23 01:08:30 by pmarcos-         ###   ########.fr       */
+/*   Updated: 2026/07/28 19:32:54 by pmarcos-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "codexion.h"
-
-/*
-** Utilidades de consulta sobre el heap: buscar un coder_id, comprobar
-** si ya esta en la cola, actualizar su key (usado en EDF cuando el
-** deadline cambia) y consultar quien esta en la raiz sin extraerlo.
-*/
 
 static int	heap_find(t_queue *queue, int coder_id)
 {

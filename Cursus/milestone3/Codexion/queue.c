@@ -6,21 +6,11 @@
 /*   By: pmarcos- <pmarcos-@student.42madrid.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/20 21:38:22 by pmarcos-          #+#    #+#             */
-/*   Updated: 2026/07/23 01:07:59 by pmarcos-         ###   ########.fr       */
+/*   Updated: 2026/07/25 19:51:20 by pmarcos-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "codexion.h"
-
-/*
-** Min-heap (array-based binary heap) usado para la planificacion
-** FIFO/EDF de los dongles.
-**   - FIFO: key = numero de secuencia de llegada (next_seq)
-**   - EDF : key = deadline (last_compile_start + time_to_burnout)
-** Los helpers internos del heap (swap/sift/grow) viven en queue_heap.c
-** y las utilidades de busqueda en queue_utils.c, para respetar el
-** limite de 5 funciones por archivo de la Norma.
-*/
 
 int	queue_init(t_queue *queue)
 {
