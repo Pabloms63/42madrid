@@ -6,13 +6,13 @@
 /*   By: pmarcos- <pmarcos-@student.42madrid.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/25 11:12:37 by pmarcos-          #+#    #+#             */
-/*   Updated: 2026/08/03 14:49:48 by pmarcos-         ###   ########.fr       */
+/*   Updated: 2026/08/03 16:04:21 by pmarcos-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "codexion.h"
 
-static void	destroy_partial(t_data *data, int count)
+static void	destroy_coders(t_data *data, int count)
 {
 	int	i;
 
@@ -25,6 +25,8 @@ static void	destroy_partial(t_data *data, int count)
 		pthread_mutex_destroy(&data->coders[i].mutex);
 		i++;
 	}
+	pthread_mutex_destroy(&data->stop_mutex);
+	pthread_mutex_destroy(&data->log_mutex);
 	free(data->dongles);
 	free(data->coders);
 }
@@ -73,7 +75,7 @@ int	init_data(t_data *data)
 		{
 			pthread_cond_destroy(&data -> dongles[i].cond);
 			pthread_mutex_destroy(&data -> dongles[i].mutex);
-			destroy_partial(data, i);
+			destroy_coders(data, i);
 			return (1);
 		}
 		init_one_coder(data, i);
@@ -84,19 +86,5 @@ int	init_data(t_data *data)
 
 void	cleanup_data(t_data *data)
 {
-	int	i;
-
-	i = 0;
-	while (i < data->num_coders)
-	{
-		free_queue(&data->dongles[i].waitlist);
-		pthread_cond_destroy(&data->dongles[i].cond);
-		pthread_mutex_destroy(&data->dongles[i].mutex);
-		pthread_mutex_destroy(&data->coders[i].mutex);
-		i++;
-	}
-	pthread_mutex_destroy(&data->stop_mutex);
-	pthread_mutex_destroy(&data->log_mutex);
-	free(data->dongles);
-	free(data->coders);
+	destroy_coders(data, data -> num_coders);
 }
