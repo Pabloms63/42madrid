@@ -38,14 +38,12 @@ typedef struct s_queue
 	long		next_seq;
 }	t_queue;
 
-
 typedef struct s_dongle
 {
 	pthread_mutex_t	mutex;
 	long			cooldown_until;
 	t_queue			waitlist;
 }	t_dongle;
-
 
 typedef struct s_coder
 {
@@ -88,7 +86,6 @@ typedef struct s_data
 	t_dongle		*dongles;
 	t_coder			*coders;
 }	t_data;
-
 
 /* UTILS */
 int			is_digit(char c);
