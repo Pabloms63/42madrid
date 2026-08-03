@@ -72,7 +72,7 @@ Dentro de Cursus se encuentran estos contenidos:
 ---
 
 # MIlestone3
-1. 😠 Exam Rank 03: 🔄
+1. 😠 Exam Rank 03: ✅
     Examen propio del milestone 3. (Python)
 
 2. 🧵 Codexion: 🔄
