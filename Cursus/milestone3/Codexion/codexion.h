@@ -41,6 +41,8 @@ typedef struct s_queue
 typedef struct s_dongle
 {
 	pthread_mutex_t	mutex;
+	pthread_cond_t	cond;
+	int				available;
 	long			cooldown_until;
 	t_queue			waitlist;
 }	t_dongle;
@@ -121,6 +123,7 @@ int			heap_grow(t_queue *queue);
 int			queue_contains(t_queue *queue, int coder_id);
 void		update_key(t_queue *queue, int coder_id, long new_key);
 int			queue_peek(t_queue *queue);
+int			queue_remove(t_queue *queue, int coder_id);
 
 /* DONGLE */
 int			try_acquire_dongle(t_dongle *dongle, int coder_id,

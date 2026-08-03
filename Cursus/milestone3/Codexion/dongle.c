@@ -6,7 +6,7 @@
 /*   By: pmarcos- <pmarcos-@student.42madrid.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/07/07 21:20:39 by pmarcos-          #+#    #+#             */
-/*   Updated: 2026/07/23 01:06:52 by pmarcos-         ###   ########.fr       */
+/*   Updated: 2026/08/03 14:50:22 by pmarcos-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,44 +32,60 @@ static void	add_to_queue(t_dongle *dongle, int coder_id,
 
 static int	can_acquire_dongle(t_dongle *dongle, int coder_id)
 {
+	if (!dongle->available)
+		return (0);
 	if (get_time_ms() < dongle->cooldown_until)
 		return (0);
 	return (queue_peek(&dongle->waitlist) == coder_id);
 }
 
-int	try_acquire_dongle(t_dongle *dongle, int coder_id,
-								long deadline, char *scheduler)
+static int	wait_for_turn(t_dongle *dongle, t_coder *coder)
 {
-	int	acquired;
-	int	served_id;
+	struct timespec	ts;
+	long			wake;
 
-	acquired = 0;
-	pthread_mutex_lock(&dongle->mutex);
-	add_to_queue(dongle, coder_id, deadline, scheduler);
-	if (can_acquire_dongle(dongle, coder_id))
+	while (!can_acquire_dongle(dongle, coder->id)
+		&& !simulation_stopped(coder->data))
 	{
-		dequeue_request(&dongle->waitlist, &served_id);
-		acquired = 1;
+		wake = get_time_ms() + 5;
+		if (dongle->cooldown_until > get_time_ms()
+			&& dongle->cooldown_until < wake)
+			wake = dongle->cooldown_until;
+		ts.tv_sec = wake / 1000;
+		ts.tv_nsec = (wake % 1000) * 1000000;
+		pthread_cond_timedwait(&dongle->cond, &dongle->mutex, &ts);
 	}
-	if (!acquired)
-		pthread_mutex_unlock(&dongle->mutex);
-	return (acquired);
-}
-
-void	release_dongle(t_dongle *dongle, long cooldown)
-{
-	dongle->cooldown_until = get_time_ms() + cooldown;
-	pthread_mutex_unlock(&dongle->mutex);
+	if (simulation_stopped(coder->data))
+	{
+		queue_remove(&dongle->waitlist, coder->id);
+		return (0);
+	}
+	return (1);
 }
 
 int	acquire_dongle(t_coder *coder, t_dongle *dongle, long deadline)
 {
-	while (!try_acquire_dongle(dongle, coder->id, deadline,
-			coder->data->scheduler)
-		&& !simulation_stopped(coder->data))
-		ft_usleep(1);
-	if (simulation_stopped(coder->data))
+	int	served_id;
+
+	pthread_mutex_lock(&dongle->mutex);
+	add_to_queue(dongle, coder->id, deadline, coder->data->scheduler);
+	if (!wait_for_turn(dongle, coder))
+	{
+		pthread_mutex_unlock(&dongle->mutex);
 		return (0);
+	}
+	dequeue_request(&dongle->waitlist, &served_id);
+	dongle->available = 0;
+	pthread_mutex_unlock(&dongle->mutex);
 	print_status(coder, "\033[32mhas taken a dongle\033[0m");
 	return (1);
+}
+
+void	release_dongle(t_dongle *dongle, long cooldown)
+{
+	pthread_mutex_lock(&dongle->mutex);
+	dongle->available = 1;
+	dongle->cooldown_until = get_time_ms() + cooldown;
+	pthread_cond_broadcast(&dongle->cond);
+	pthread_mutex_unlock(&dongle->mutex);
 }

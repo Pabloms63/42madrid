@@ -6,7 +6,7 @@
 /*   By: pmarcos- <pmarcos-@student.42madrid.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/25 11:12:37 by pmarcos-          #+#    #+#             */
-/*   Updated: 2026/07/23 14:07:00 by pmarcos-         ###   ########.fr       */
+/*   Updated: 2026/08/03 14:49:48 by pmarcos-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,6 +20,7 @@ static void	destroy_partial(t_data *data, int count)
 	while (i < count)
 	{
 		free_queue(&data->dongles[i].waitlist);
+		pthread_cond_destroy(&data->dongles[i].cond);
 		pthread_mutex_destroy(&data->dongles[i].mutex);
 		pthread_mutex_destroy(&data->coders[i].mutex);
 		i++;
@@ -31,6 +32,7 @@ static void	destroy_partial(t_data *data, int count)
 static void	init_one_coder(t_data *data, int i)
 {
 	data -> dongles[i].cooldown_until = 0;
+	data -> dongles[i].available = 1;
 	pthread_mutex_init(&data -> coders[i].mutex, NULL);
 	data -> coders[i].id = i + 1;
 	data -> coders[i].left = &data -> dongles[i];
@@ -66,8 +68,10 @@ int	init_data(t_data *data)
 	while (i < data -> num_coders)
 	{
 		pthread_mutex_init(&data -> dongles[i].mutex, NULL);
+		pthread_cond_init(&data -> dongles[i].cond, NULL);
 		if (queue_init(&data -> dongles[i].waitlist))
 		{
+			pthread_cond_destroy(&data -> dongles[i].cond);
 			pthread_mutex_destroy(&data -> dongles[i].mutex);
 			destroy_partial(data, i);
 			return (1);
@@ -86,6 +90,7 @@ void	cleanup_data(t_data *data)
 	while (i < data->num_coders)
 	{
 		free_queue(&data->dongles[i].waitlist);
+		pthread_cond_destroy(&data->dongles[i].cond);
 		pthread_mutex_destroy(&data->dongles[i].mutex);
 		pthread_mutex_destroy(&data->coders[i].mutex);
 		i++;

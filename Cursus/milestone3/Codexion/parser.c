@@ -6,7 +6,7 @@
 /*   By: pmarcos- <pmarcos-@student.42madrid.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/24 18:09:53 by pmarcos-          #+#    #+#             */
-/*   Updated: 2026/06/26 16:27:08 by pmarcos-         ###   ########.fr       */
+/*   Updated: 2026/08/03 13:51:33 by pmarcos-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,7 @@ static int	validate_args(char **av)
 		if (!is_number(av[i]))
 			return (1);
 		num = ft_atol(av[i]);
-		if (num < 0)
+		if (num <= 0)
 			return (1);
 		i++;
 	}
@@ -45,13 +45,5 @@ int	parse_args(t_data *data, char **av)
 	data -> dongle_cooldown = ft_atol(av[7]);
 	data -> scheduler = av[8];
 	data -> stop = 0;
-	if (data -> num_coders <= 0
-		|| data -> time_to_burnout <= 0
-		|| data -> time_to_compile <= 0
-		|| data -> time_to_debug <= 0
-		|| data -> time_to_refactor <= 0
-		|| data -> required_compiles <= 0
-		|| data -> dongle_cooldown <= 0)
-		return (1);
 	return (0);
 }

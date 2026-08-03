@@ -6,7 +6,7 @@
 /*   By: pmarcos- <pmarcos-@student.42madrid.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/07/09 21:00:00 by pmarcos-          #+#    #+#             */
-/*   Updated: 2026/07/28 19:32:54 by pmarcos-         ###   ########.fr       */
+/*   Updated: 2026/08/03 14:50:43 by pmarcos-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,4 +52,21 @@ int	queue_peek(t_queue *queue)
 	if (queue->size == 0)
 		return (-1);
 	return (queue->nodes[0].coder_id);
+}
+
+int	queue_remove(t_queue *queue, int coder_id)
+{
+	int	idx;
+
+	idx = heap_find(queue, coder_id);
+	if (idx < 0)
+		return (1);
+	queue->size--;
+	queue->nodes[idx] = queue->nodes[queue->size];
+	if (idx < queue->size)
+	{
+		sift_down(queue, idx);
+		sift_up(queue, idx);
+	}
+	return (0);
 }
