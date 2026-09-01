@@ -1,4 +1,4 @@
-from typing import Dict, List, Protocol
+from typing import Dict, List, Protocol, Tuple
 
 import numpy as np
 
@@ -7,6 +7,16 @@ from .vocabulary import Vocabulary
 
 # A call is a few dozen tokens; anything longer is a runaway generation.
 MAX_TOKENS = 256
+
+
+def healable(text: str) -> bool:
+    """Return True if ``text`` sits inside a word rather than on a boundary.
+
+    Healing is only worth doing where the forced text cut a word in half.
+    On a clean boundary, a quote or a space, the model already sees a prefix
+    it could have produced by itself.
+    """
+    return bool(text) and all(char.isalnum() or char == "_" for char in text)
 
 
 class DecodeError(Exception):
@@ -62,34 +72,60 @@ class Decoder:
         state = self.grammar.start()
         generated = ""
         steps = 0
+        just_forced = False
         while not state.is_complete():
             forced = state.forced_text()
             if forced:
                 generated += forced
                 state = state.advance(forced)
+                just_forced = True
                 continue
             if steps >= self.max_tokens:
                 raise DecodeError("token budget exhausted: %r" % generated)
-            piece = self._next_piece(prompt + generated, state)
+            piece = self._next_piece(prompt, generated, state, just_forced)
             generated += piece
             state = state.advance(piece)
+            just_forced = False
             steps += 1
         return generated
 
-    def _next_piece(self, text: str, state: GrammarState) -> str:
-        """Return the token to append at this position.
+    def _split(
+        self, prompt: str, generated: str, forced: bool
+    ) -> Tuple[str, str]:
+        """Split the text into the part to encode and the part to re-decide.
 
-        Among the tokens the grammar accepts, the highest scoring one is the
-        greedy answer.  When another token within ``margin`` of it merely
-        extends it, that longer token is taken instead: it commits to the same
-        text but covers more ground, which saves whole forward passes.
+        The grammar writes every character it has no choice about, which
+        regularly stops in the middle of a word: all the function names share
+        ``fn_``, so that prefix is emitted without asking anyone.  The model is
+        then queried from a prefix it would never have produced, because ``fn``
+        and ``_`` are one token together with whatever follows, and its scores
+        there are worthless.
+
+        Backing up the last token puts the question back on a real token
+        boundary.  The characters given up are not lost: they become a
+        constraint every candidate has to match.
         """
-        self.forwards += 1
-        scores = np.asarray(
-            self.model.logits(self.model.encode(text)), dtype=np.float64
-        )
-        if scores.size <= self.highest_id:
-            raise DecodeError("the model returned fewer logits than tokens")
+        text = prompt + generated
+        if not forced:
+            return text, ""
+        ids = self.model.encode(text)
+        if not ids:
+            return text, ""
+        tail = self.pieces.get(int(ids[-1]), "")
+        if not (tail and generated.endswith(tail) and healable(tail)):
+            return text, ""
+        return text[:len(text) - len(tail)], tail
+
+    def _search(
+        self, scores: np.ndarray, state: GrammarState, tail: str
+    ) -> str:
+        """Return the best token extending ``tail`` that the grammar accepts.
+
+        The highest scoring candidate is the greedy answer.  When another
+        token within ``margin`` of it merely extends that answer, the longer
+        one is taken instead: it commits to the same text but covers more
+        ground, which saves whole forward passes.
+        """
         candidates = self.token_ids[np.argsort(-scores[self.token_ids])]
         best = ""
         ceiling = 0.0
@@ -98,12 +134,43 @@ class Decoder:
             if best and score < ceiling - self.margin:
                 break
             piece = self.pieces[int(token_id)]
-            if not state.accepts(piece):
+            # The token has to reproduce the healed characters and add to
+            # them, otherwise it makes no progress.
+            if not piece.startswith(tail) or len(piece) == len(tail):
+                continue
+            if not state.accepts(piece[len(tail):]):
                 continue
             if not best:
                 best, ceiling = piece, score
             elif len(piece) > len(best) and piece.startswith(best):
                 best = piece
+        return best
+
+    def _next_piece(
+        self, prompt: str, generated: str, state: GrammarState,
+        forced: bool = False,
+    ) -> str:
+        """Return the text to append at this position."""
+        head, tail = self._split(prompt, generated, forced)
+
+        self.forwards += 1
+        scores = np.asarray(
+            self.model.logits(self.model.encode(head)), dtype=np.float64
+        )
+        if scores.size <= self.highest_id:
+            raise DecodeError("the model returned fewer logits than tokens")
+
+        best = self._search(scores, state, tail)
+        if not best and tail:
+            # No token extends the healed characters.  Rather than fail, ask
+            # again from the whole text: healing can only ever help, never
+            # take a call away.
+            self.forwards += 1
+            scores = np.asarray(
+                self.model.logits(self.model.encode(prompt + generated)),
+                dtype=np.float64,
+            )
+            best, tail = self._search(scores, state, ""), ""
         if not best:
             raise DecodeError("no token of the vocabulary fits the grammar")
-        return best
+        return best[len(tail):]

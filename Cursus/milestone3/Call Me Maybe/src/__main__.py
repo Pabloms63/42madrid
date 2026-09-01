@@ -53,7 +53,13 @@ def run(
             text = decoder.decode(build_prompt(functions, request))
             calls.append(parse_call(request, text, functions))
         except (DecodeError, GrammarError, ParserError, EngineError) as err:
-            print("prompt %d skipped (%s)" % (index, err), file=sys.stderr)
+            print("prompt %d failed (%s)" % (index, err), file=sys.stderr)
+            # Results are read back by position, so a missing entry would
+            # shift every later answer onto the wrong prompt.  An empty call
+            # keeps the alignment and loses only the prompt that failed.
+            calls.append(
+                FunctionCall(prompt=request, name="", parameters={})
+            )
     return calls
 
 

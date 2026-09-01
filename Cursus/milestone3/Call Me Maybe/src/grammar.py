@@ -1,228 +1,383 @@
-import re
-from typing import FrozenSet, List, Optional, Sequence, Set, Tuple
+"""Schema-aware grammar used to constrain the decoder.
+
+Every function definition is turned into a template: an alternating sequence
+of literal chunks and typed slots.  A ``GrammarState`` keeps one cursor per
+template, so the set of live cursors *is* the set of calls still reachable
+from the text generated so far.
+"""
+
+import json
+from typing import Dict, List, Optional, Sequence, Set, Tuple, Union
 
 from .models import FunctionDefinition
 
-# A number still being written ("-", "1.", "1.5e-") and one allowed to stop.
-_PARTIAL = re.compile(r"-?((0|[1-9][0-9]*)(\.[0-9]*)?([eE][+-]?[0-9]*)?)?")
-_COMPLETE = re.compile(r"-?(0|[1-9][0-9]*)(\.[0-9]+)?([eE][+-]?[0-9]+)?")
+DIGITS = frozenset("0123456789")
+HEXDIGITS = frozenset("0123456789abcdefABCDEF")
+ESCAPES = frozenset('"\\/bfnrt')
 
-_ESCAPABLE = set('"\\/bfnrt')
-MAX_STRING_LENGTH = 512
+# A cursor is (template index, part index, position inside that part).  The
+# position is an offset for a literal and an automaton state for a slot.
+Cursor = Tuple[int, int, Union[int, str]]
 
 
 class GrammarError(Exception):
-    """Raised when the generated text violates the grammar."""
+    """Raised when a grammar cannot be built or no longer accepts the text."""
 
 
-class _Segment:
-    """One piece of a template: fixed text or a typed hole."""
+class ValueAutomaton:
+    """State machine recognising the JSON encoding of one parameter type."""
 
-    def extends(self, buffer: str, char: str) -> bool:
-        """Return True if ``buffer + char`` is still a valid prefix."""
+    initial: str = ""
+
+    def step(self, state: str, char: str) -> List[str]:
+        """Return the states reachable from ``state`` by reading ``char``."""
         raise NotImplementedError
 
-    def is_final(self, buffer: str) -> bool:
-        """Return True if ``buffer`` is a complete value for this segment."""
+    def is_final(self, state: str) -> bool:
+        """Return True if ``state`` is a complete value."""
+        raise NotImplementedError
+
+    def next_chars(self, state: str) -> Optional[Set[str]]:
+        """Return the characters accepted in ``state``, None if unbounded."""
         raise NotImplementedError
 
 
-class _Literal(_Segment):
-    """Fixed text, reproduced verbatim."""
+class NumberAutomaton(ValueAutomaton):
+    """Recognise a JSON number, rejecting leading zeros and bare dots."""
 
-    def __init__(self, text: str) -> None:
-        self.text = text
+    initial = "start"
+    ALPHABET = "-+.eE0123456789"
+    FINAL = frozenset({"zero", "integer", "fraction", "exponent_digit"})
 
-    def extends(self, buffer: str, char: str) -> bool:
-        return len(buffer) < len(self.text) and self.text[len(buffer)] == char
+    def step(self, state: str, char: str) -> List[str]:
+        """Return the states reachable from ``state`` by reading ``char``."""
+        if state == "start":
+            if char == "-":
+                return ["sign"]
+            if char == "0":
+                return ["zero"]
+            if char in "123456789":
+                return ["integer"]
+        elif state == "sign":
+            if char == "0":
+                return ["zero"]
+            if char in "123456789":
+                return ["integer"]
+        elif state == "zero":
+            if char == ".":
+                return ["point"]
+            if char in "eE":
+                return ["exponent"]
+        elif state == "integer":
+            if char in DIGITS:
+                return ["integer"]
+            if char == ".":
+                return ["point"]
+            if char in "eE":
+                return ["exponent"]
+        elif state == "point":
+            if char in DIGITS:
+                return ["fraction"]
+        elif state == "fraction":
+            if char in DIGITS:
+                return ["fraction"]
+            if char in "eE":
+                return ["exponent"]
+        elif state == "exponent":
+            if char in "+-":
+                return ["exponent_sign"]
+            if char in DIGITS:
+                return ["exponent_digit"]
+        elif state == "exponent_sign":
+            if char in DIGITS:
+                return ["exponent_digit"]
+        elif state == "exponent_digit":
+            if char in DIGITS:
+                return ["exponent_digit"]
+        return []
 
-    def is_final(self, buffer: str) -> bool:
-        return buffer == self.text
+    def is_final(self, state: str) -> bool:
+        """Return True if the digits read so far already form a number."""
+        return state in self.FINAL
+
+    def next_chars(self, state: str) -> Optional[Set[str]]:
+        """Return the characters accepted in ``state``."""
+        return {char for char in self.ALPHABET if self.step(state, char)}
 
 
-class _Name(_Literal):
-    """The function name.
+class IntegerAutomaton(NumberAutomaton):
+    """Recognise a JSON integer: no fraction and no exponent.
 
-    Fixed text like any literal, but the decoder must not write it for the
-    model: forcing it character by character would land the model mid token,
-    where its predictions are unreliable.
+    A parameter typed ``integer`` reaches a function annotated ``int``, and
+    ``4.0`` is not an ``int`` in Python.  Forbidding the decimal point in the
+    grammar is what keeps that distinction, rather than rounding later and
+    silently changing the value.
     """
 
+    ALPHABET = "-0123456789"
+    FINAL = frozenset({"zero", "integer"})
 
-class _Enum(_Segment):
-    """A choice between fixed spellings, used for booleans."""
-
-    def __init__(self, options: Sequence[str]) -> None:
-        self.options = tuple(options)
-
-    def extends(self, buffer: str, char: str) -> bool:
-        return any(opt.startswith(buffer + char) for opt in self.options)
-
-    def is_final(self, buffer: str) -> bool:
-        return buffer in self.options
+    def step(self, state: str, char: str) -> List[str]:
+        """Return the states reachable from ``state`` by reading ``char``."""
+        if char in ".eE":
+            return []
+        return super().step(state, char)
 
 
-class _Number(_Segment):
-    """A JSON number: no leading zero, no leading dot, optional exponent."""
+class StringAutomaton(ValueAutomaton):
+    """Recognise a quoted JSON string, escapes included."""
 
-    def extends(self, buffer: str, char: str) -> bool:
-        return _PARTIAL.fullmatch(buffer + char) is not None
+    initial = "start"
+    HEX_CHAIN = {"hex1": "hex2", "hex2": "hex3", "hex3": "hex4", "hex4": "body"}
 
-    def is_final(self, buffer: str) -> bool:
-        return _COMPLETE.fullmatch(buffer) is not None
+    def step(self, state: str, char: str) -> List[str]:
+        """Return the states reachable from ``state`` by reading ``char``."""
+        if state == "start":
+            return ["body"] if char == '"' else []
+        if state == "body":
+            if char == '"':
+                return ["done"]
+            if char == "\\":
+                return ["escape"]
+            return ["body"] if char >= " " else []
+        if state == "escape":
+            if char in ESCAPES:
+                return ["body"]
+            return ["hex1"] if char == "u" else []
+        if state in self.HEX_CHAIN:
+            return [self.HEX_CHAIN[state]] if char in HEXDIGITS else []
+        return []
+
+    def is_final(self, state: str) -> bool:
+        """Return True once the closing quote has been read."""
+        return state == "done"
+
+    def next_chars(self, state: str) -> Optional[Set[str]]:
+        """Return the characters accepted in ``state``, None if unbounded."""
+        if state == "start":
+            return {'"'}
+        if state == "body":
+            return None
+        if state == "escape":
+            return set(ESCAPES) | {"u"}
+        if state in self.HEX_CHAIN:
+            return set(HEXDIGITS)
+        return set()
 
 
-class _String(_Segment):
-    r"""The inside of a JSON string; the quotes around it are literals.
+class BooleanAutomaton(ValueAutomaton):
+    """Recognise ``true`` or ``false``; the state is the prefix read so far."""
 
-    Only the short escapes are allowed (``\"``, ``\\``, ``\n``...), which is
-    enough to carry regexes and quoted text while keeping the rule to one
-    line: a backslash must be followed by an escapable character.
-    """
+    initial = ""
+    WORDS = ("true", "false")
 
-    def extends(self, buffer: str, char: str) -> bool:
-        if len(buffer) >= MAX_STRING_LENGTH:
-            return False
-        if self._escaping(buffer):
-            return char in _ESCAPABLE
-        return char == "\\" or (char >= " " and char != '"')
+    def step(self, state: str, char: str) -> List[str]:
+        """Return the states reachable from ``state`` by reading ``char``."""
+        candidate = state + char
+        if any(word.startswith(candidate) for word in self.WORDS):
+            return [candidate]
+        return []
 
-    def is_final(self, buffer: str) -> bool:
-        return not self._escaping(buffer)
+    def is_final(self, state: str) -> bool:
+        """Return True if a whole keyword has been read."""
+        return state in self.WORDS
 
-    @staticmethod
-    def _escaping(buffer: str) -> bool:
-        """Return True if the buffer ends on an unpaired backslash."""
-        return (len(buffer) - len(buffer.rstrip("\\"))) % 2 == 1
-
-
-# (plan index, segment index, text consumed so far in that segment)
-_State = Tuple[int, int, str]
+    def next_chars(self, state: str) -> Optional[Set[str]]:
+        """Return the characters accepted in ``state``."""
+        return {
+            word[len(state)]
+            for word in self.WORDS
+            if word.startswith(state) and len(word) > len(state)
+        }
 
 
-def _build_plan(function: FunctionDefinition) -> List[_Segment]:
-    """Compile one function definition into an ordered list of segments."""
-    plan: List[_Segment] = [_Literal('{"name": "'), _Name(function.name)]
-    literal = '", "parameters": {'
-    for key, param in function.parameters.items():
-        literal += '"%s": ' % key
-        if param.type == "string":
-            plan += [_Literal(literal + '"'), _String()]
-            literal = '", '
-        elif param.type == "number":
-            plan += [_Literal(literal), _Number()]
-            literal = ", "
-        else:
-            plan += [_Literal(literal), _Enum(("true", "false"))]
-            literal = ", "
-    plan.append(_Literal(literal.rstrip(", ") + "}}"))
-    return plan
+AUTOMATA: Dict[str, ValueAutomaton] = {
+    "number": NumberAutomaton(),
+    "integer": IntegerAutomaton(),
+    "string": StringAutomaton(),
+    "boolean": BooleanAutomaton(),
+}
+
+Part = Union[str, ValueAutomaton]
 
 
 class Grammar:
-    """The set of templates the model is allowed to produce."""
+    """The set of JSON calls the decoder is allowed to produce."""
 
     def __init__(self, functions: Sequence[FunctionDefinition]) -> None:
+        """Build one template per function definition.
+
+        Args:
+            functions: the available function definitions.
+
+        Raises:
+            GrammarError: if the definitions are empty, duplicated or use a
+                parameter type the grammar cannot generate.
+        """
         if not functions:
             raise GrammarError("no function definition to build a grammar from")
-        self.plans = [_build_plan(function) for function in functions]
+        seen: Set[str] = set()
+        self.templates: List[List[Part]] = []
+        for function in functions:
+            if function.name in seen:
+                raise GrammarError("duplicated function name: %r" % function.name)
+            seen.add(function.name)
+            self.templates.append(self._template(function))
+
+    def _template(self, function: FunctionDefinition) -> List[Part]:
+        """Turn one definition into literal chunks and typed slots."""
+        parts: List[Part] = []
+        buffer = '{"name": %s, "parameters": {' % json.dumps(function.name)
+        for index, (key, param) in enumerate(function.parameters.items()):
+            automaton = AUTOMATA.get(param.type)
+            if automaton is None:
+                raise GrammarError(
+                    "%s: unsupported parameter type %r" % (function.name, param.type)
+                )
+            if index:
+                buffer += ", "
+            buffer += "%s: " % json.dumps(key)
+            parts.append(buffer)
+            parts.append(automaton)
+            buffer = ""
+        parts.append(buffer + "}}")
+        return parts
 
     def start(self) -> "GrammarState":
-        """Return the state in which nothing has been generated yet."""
-        seeds = {(index, 0, "") for index in range(len(self.plans))}
-        return GrammarState(self, frozenset(self._close(seeds)))
+        """Return the state accepting every call, before any text is read."""
+        cursors = tuple(self.at(index, 0) for index in range(len(self.templates)))
+        return GrammarState(self, cursors)
 
-    def _close(self, states: Set[_State]) -> Set[_State]:
-        """Add the states reached by declaring the current segment done."""
-        closed: Set[_State] = set()
-        pending = list(states)
-        while pending:
-            state = pending.pop()
-            if state in closed:
-                continue
-            closed.add(state)
-            plan, index, buffer = self.plans[state[0]], state[1], state[2]
-            if index < len(plan) and plan[index].is_final(buffer):
-                pending.append((state[0], index + 1, ""))
-        return closed
+    def at(self, template: int, part: int) -> Cursor:
+        """Return the cursor entering part ``part`` of template ``template``."""
+        parts = self.templates[template]
+        if part >= len(parts):
+            return (template, len(parts), 0)
+        chunk = parts[part]
+        if isinstance(chunk, str):
+            return (template, part, 0)
+        return (template, part, chunk.initial)
 
-    def step(self, states: FrozenSet[_State], char: str) -> FrozenSet[_State]:
-        """Consume one character and return the states that survive it."""
-        moved: Set[_State] = set()
-        for plan_index, index, buffer in states:
-            plan = self.plans[plan_index]
-            if index < len(plan) and plan[index].extends(buffer, char):
-                moved.add((plan_index, index, buffer + char))
-        return frozenset(self._close(moved))
+    def is_done(self, cursor: Cursor) -> bool:
+        """Return True if ``cursor`` consumed its whole template."""
+        return cursor[1] >= len(self.templates[cursor[0]])
+
+    def step(self, cursor: Cursor, char: str) -> List[Cursor]:
+        """Return the cursors reachable from ``cursor`` by reading ``char``.
+
+        A slot that already holds a complete value may either keep growing or
+        hand the character over to the next part; that is what lets a number
+        end on the comma or the closing brace that follows it.
+        """
+        template, part, position = cursor
+        parts = self.templates[template]
+        if part >= len(parts):
+            return []
+        chunk = parts[part]
+        if isinstance(chunk, str):
+            offset = int(position)
+            if offset < len(chunk) and chunk[offset] == char:
+                if offset + 1 == len(chunk):
+                    return [self.at(template, part + 1)]
+                return [(template, part, offset + 1)]
+            return []
+        state = str(position)
+        reachable: List[Cursor] = [
+            (template, part, nxt) for nxt in chunk.step(state, char)
+        ]
+        if chunk.is_final(state):
+            reachable.extend(self.step(self.at(template, part + 1), char))
+        return reachable
+
+    def chars(self, cursor: Cursor) -> Optional[Set[str]]:
+        """Return the characters ``cursor`` accepts, None if unbounded."""
+        template, part, position = cursor
+        parts = self.templates[template]
+        if part >= len(parts):
+            return set()
+        chunk = parts[part]
+        if isinstance(chunk, str):
+            return {chunk[int(position)]}
+        state = str(position)
+        allowed = chunk.next_chars(state)
+        if not chunk.is_final(state):
+            return allowed
+        following = self.chars(self.at(template, part + 1))
+        if allowed is None or following is None:
+            return None
+        return allowed | following
 
 
 class GrammarState:
-    """An immutable position inside the grammar.
+    """The set of calls still reachable from the text generated so far."""
 
-    Immutable on purpose: the decoder tests many candidate tokens against the
-    same position before committing to one of them.
-    """
-
-    def __init__(self, grammar: Grammar, states: FrozenSet[_State]) -> None:
+    def __init__(self, grammar: Grammar, cursors: Tuple[Cursor, ...]) -> None:
+        """Store the grammar and the live cursors."""
         self.grammar = grammar
-        self.states = states
-
-    def accepts(self, text: str) -> bool:
-        """Return True if ``text`` can be appended to the generated output."""
-        states = self.states
-        for char in text:
-            states = self.grammar.step(states, char)
-            if not states:
-                return False
-        return True
-
-    def advance(self, text: str) -> "GrammarState":
-        """Return the state reached after appending ``text``."""
-        states = self.states
-        for char in text:
-            states = self.grammar.step(states, char)
-            if not states:
-                raise GrammarError("text rejected by the grammar: %r" % text)
-        return GrammarState(self.grammar, states)
+        self.cursors = cursors
 
     def is_complete(self) -> bool:
-        """Return True if the output is a finished, schema-valid call."""
-        return any(
-            index >= len(self.grammar.plans[plan_index])
-            for plan_index, index, _ in self.states
-        )
+        """Return True if one of the templates has been fully generated."""
+        return any(self.grammar.is_done(cursor) for cursor in self.cursors)
+
+    def accepts(self, piece: str) -> bool:
+        """Return True if the whole token ``piece`` can be appended here."""
+        return bool(self._consume(piece))
+
+    def advance(self, text: str) -> "GrammarState":
+        """Return the state reached after reading ``text``.
+
+        Raises:
+            GrammarError: if the text does not fit any of the templates.
+        """
+        cursors = self._consume(text)
+        if not cursors:
+            raise GrammarError("the grammar rejects %r" % text)
+        return GrammarState(self.grammar, cursors)
 
     def forced_text(self) -> str:
-        """Return the text that is unavoidable from here, possibly empty.
+        """Return the text that every reachable call shares from here.
 
-        When a single character is legal the model has no choice to make, so
-        the decoder emits it without asking the LLM for logits.  This is what
-        makes the punctuation of the JSON skeleton free.
+        Whenever a single character is possible it carries no information, so
+        it is emitted without asking the model: this collapses the punctuation,
+        the parameter names and the common prefixes of the function names.
         """
-        chunks: List[str] = []
-        state = self
-        while not state.is_complete():
-            char = state._only_char()
-            if char is None:
+        pieces: List[str] = []
+        cursors = self.cursors
+        while not any(self.grammar.is_done(cursor) for cursor in cursors):
+            allowed = self._possible(cursors)
+            if allowed is None or len(allowed) != 1:
                 break
-            chunks.append(char)
-            state = state.advance(char)
-        return "".join(chunks)
+            char = next(iter(allowed))
+            pieces.append(char)
+            cursors = self._advance(cursors, char)
+        return "".join(pieces)
 
-    def _only_char(self) -> Optional[str]:
-        """Return the single legal next character, or None if there are many."""
-        found: Optional[str] = None
-        for plan_index, index, buffer in self.states:
-            plan = self.grammar.plans[plan_index]
-            if index >= len(plan):
+    def _possible(self, cursors: Tuple[Cursor, ...]) -> Optional[Set[str]]:
+        """Return the characters accepted by ``cursors``, None if unbounded."""
+        allowed: Set[str] = set()
+        for cursor in cursors:
+            chars = self.grammar.chars(cursor)
+            if chars is None:
                 return None
-            segment = plan[index]
-            if not isinstance(segment, _Literal) or isinstance(segment, _Name):
-                return None
-            if len(buffer) == len(segment.text):
-                continue  # already closed, its successor is in the set
-            char = segment.text[len(buffer)]
-            if found is not None and found != char:
-                return None
-            found = char
-        return found
+            allowed |= chars
+            if len(allowed) > 1:
+                return allowed
+        return allowed
+
+    def _advance(self, cursors: Tuple[Cursor, ...], char: str) -> Tuple[Cursor, ...]:
+        """Return the cursors reachable from ``cursors`` by reading ``char``."""
+        reached: Dict[Cursor, None] = {}
+        for cursor in cursors:
+            for nxt in self.grammar.step(cursor, char):
+                reached[nxt] = None
+        return tuple(reached)
+
+    def _consume(self, text: str) -> Tuple[Cursor, ...]:
+        """Return the cursors left after reading ``text``, empty if rejected."""
+        cursors = self.cursors
+        for char in text:
+            cursors = self._advance(cursors, char)
+            if not cursors:
+                return ()
+        return cursors

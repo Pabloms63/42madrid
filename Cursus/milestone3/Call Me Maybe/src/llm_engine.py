@@ -45,7 +45,9 @@ class LLMEngine:
         try:
             self.model = Small_LLM_Model(model_name)
         except Exception as err:
-            raise EngineError("could not load %s: %s" % (model_name, err)) from err
+            raise EngineError(
+                "could not load %s: %s" % (model_name, err)
+                ) from err
 
     def encode(self, text: str) -> List[int]:
         """Return the token ids of ``text``."""
@@ -63,23 +65,32 @@ class LLMEngine:
         try:
             scores = self.model.get_logits_from_input_ids(input_ids)
         except Exception as err:
-            raise EngineError("the model failed to produce logits: %s" % err) from err
+            raise EngineError(
+                "the model failed to produce logits: %s" % err
+                ) from err
         if hasattr(scores, "tolist"):
             scores = scores.tolist()
-        while isinstance(scores, list) and scores and isinstance(scores[0], list):
+        while isinstance(
+            scores, list
+            ) and scores and isinstance(
+                scores[0], list
+                ):
             scores = scores[-1]
         if not isinstance(scores, list) or not scores:
             raise EngineError("the model returned no logits")
         return [float(score) for score in scores]
 
     def vocabulary(self) -> Vocabulary:
-        """Build the id to text mapping from the file shipped with the model."""
         try:
             path = self.model.get_path_to_vocab_file()
             with open(path, encoding="utf-8") as handle:
                 size = len(json.load(handle))
             return Vocabulary(path, size)
         except (OSError, ValueError) as err:
-            raise EngineError("could not read the vocabulary file: %s" % err) from err
+            raise EngineError(
+                "could not read the vocabulary file: %s" % err
+                ) from err
         except Exception as err:
-            raise EngineError("the SDK did not provide a vocabulary: %s" % err) from err
+            raise EngineError(
+                "the SDK did not provide a vocabulary: %s" % err
+                ) from err

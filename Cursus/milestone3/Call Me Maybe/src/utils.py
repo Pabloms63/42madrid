@@ -6,7 +6,6 @@ from functools import lru_cache
 
 @lru_cache(maxsize=1)
 def bytes_to_unicode() -> dict[int, str]:
-    """Map each byte value to a printable unicode char (GPT-2 byte-level BPE)."""
     bs = (
         list(range(ord("!"), ord("~") + 1))
         + list(range(ord("¡"), ord("¬") + 1))

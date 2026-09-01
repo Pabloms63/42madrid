@@ -4,7 +4,9 @@ from typing import Dict, Any, Literal
 
 class FunctionParam(BaseModel):
     model_config = ConfigDict(extra="forbid")
-    type: Literal["number", "string", "boolean"]
+    type: Literal[
+        "number", "integer", "string", "boolean", "array", "object"
+    ]
 
 
 class FunctionDefinition(BaseModel):
