@@ -1,7 +1,6 @@
 import json
 import os
 from typing import Any, List
-import torch
 
 from .vocabulary import Vocabulary
 
@@ -13,12 +12,8 @@ class EngineError(Exception):
 
 
 def _flatten(value: Any) -> List[int]:
-    """Turn a tensor, a nested sequence or a list of ids into a flat list.
+    """Turn a tensor, a nested sequence or a list of ids into a flat list."""
 
-    ``Small_LLM_Model.encode`` returns a tensor, usually with a batch
-    dimension.  Converting through ``tolist`` avoids importing the tensor
-    library here.
-    """
     if hasattr(value, "tolist"):
         value = value.tolist()
     if isinstance(value, int):
@@ -35,7 +30,12 @@ class LLMEngine:
     """Expose the SDK as the ``LanguageModel`` protocol used by the decoder."""
 
     def __init__(self, model_name: str = DEFAULT_MODEL) -> None:
-        torch.set_num_threads(os.cpu_count() or 1)
+        """Load the model through the SDK
+        Args:
+            model_name: the model to load;
+            defaults to the one the subject requires."""
+
+        os.environ.setdefault("OMP_NUM_THREADS", str(os.cpu_count() or 1))
         try:
             from llm_sdk import Small_LLM_Model
         except ImportError as err:
@@ -81,6 +81,10 @@ class LLMEngine:
         return [float(score) for score in scores]
 
     def vocabulary(self) -> Vocabulary:
+        """Build the model through the SDK.
+        Returns:
+            A Vocabulary holding the text every token id produces."""
+
         try:
             path = self.model.get_path_to_vocab_file()
             with open(path, encoding="utf-8") as handle:

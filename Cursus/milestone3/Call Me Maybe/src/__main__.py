@@ -54,9 +54,6 @@ def run(
             calls.append(parse_call(request, text, functions))
         except (DecodeError, GrammarError, ParserError, EngineError) as err:
             print("prompt %d failed (%s)" % (index, err), file=sys.stderr)
-            # Results are read back by position, so a missing entry would
-            # shift every later answer onto the wrong prompt.  An empty call
-            # keeps the alignment and loses only the prompt that failed.
             calls.append(
                 FunctionCall(prompt=request, name="", parameters={})
             )
@@ -80,7 +77,9 @@ def main() -> int:
         print("interrupted", file=sys.stderr)
         return 130
 
-    print("%d/%d calls written to %s" % (len(calls), len(prompts), args.output))
+    print(
+        "%d/%d calls written to %s" % (len(calls), len(prompts), args.output)
+        )
     return 0 if len(calls) == len(prompts) else 1
 
 

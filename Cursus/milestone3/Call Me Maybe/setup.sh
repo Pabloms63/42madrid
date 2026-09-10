@@ -15,5 +15,4 @@ uv sync
 echo "Listo. El modelo se descargará en la primera ejecución si hace falta."
 
 ### chmod +x setup.sh
-### cd ~/Documents/Cursus/milestone3/"Call Me Maybe"
 ### ./setup.sh

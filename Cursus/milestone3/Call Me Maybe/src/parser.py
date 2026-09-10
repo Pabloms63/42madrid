@@ -13,28 +13,21 @@ def parse_call(
     text: str,
     functions: Sequence[FunctionDefinition],
 ) -> FunctionCall:
-    """Validate ``text`` against ``functions`` and build the call.
-
-    Args:
-        prompt: the original request, copied into the result.
-        text: the JSON produced by the decoder.
-        functions: the available function definitions.
-
-    Returns:
-        The validated call.
-
-    Raises:
-        ParserError: if the text is not a call matching one of the functions.
-    """
     try:
         payload = json.loads(text)
     except json.JSONDecodeError as err:
-        raise ParserError("the generated text is not valid JSON: %s" % err) from err
+        raise ParserError(
+            "the generated text is not valid JSON: %s" % err
+            ) from err
     if not isinstance(payload, dict):
-        raise ParserError("expected a JSON object, got %s" % type(payload).__name__)
+        raise ParserError(
+            "expected a JSON object, got %s" % type(payload).__name__
+            )
 
     name = payload.get("name")
-    definitions: Dict[str, FunctionDefinition] = {fn.name: fn for fn in functions}
+    definitions: Dict[str, FunctionDefinition] = {
+        fn.name: fn for fn in functions
+        }
     if not isinstance(name, str) or name not in definitions:
         raise ParserError("unknown function name: %r" % (name,))
 
@@ -59,7 +52,6 @@ def parse_call(
 
 
 def _matches(value: object, expected: str) -> bool:
-    """Return True if ``value`` has the JSON type ``expected``."""
     if expected == "number":
         return isinstance(value, (int, float)) and not isinstance(value, bool)
     if expected == "integer":
@@ -70,16 +62,7 @@ def _matches(value: object, expected: str) -> bool:
 
 
 def _coerce(value: object, expected: str) -> object:
-    """Return ``value`` as the Python type the definition asks for.
-
-    JSON draws no line between ``2`` and ``2.0``, but the function receiving
-    the call does: a parameter declared ``number`` stands for a ``float``, and
-    reading one back as ``int`` is enough to make a strict callee reject it.
-    The grammar has already ruled out anything that could lose information
-    here, so the conversion is safe.
-    """
-    if expected == "number":
-        return float(value)  # type: ignore[arg-type]
-    if expected == "integer":
-        return int(value)  # type: ignore[arg-type]
+    if expected == "number" and isinstance(value, int) \
+            and not isinstance(value, bool):
+        return float(value)
     return value

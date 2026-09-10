@@ -4,6 +4,11 @@ from functools import lru_cache
 
 @lru_cache(maxsize=1)
 def bytes_to_unicode() -> dict[int, str]:
+    """Build the byte to printable character table used by byte-level BPE.
+
+    Returns:
+            One entry per byte value, mapping it to its stand-in character."""
+
     bs = (
         list(range(ord("!"), ord("~") + 1))
         + list(range(ord("¡"), ord("¬") + 1))
@@ -20,7 +25,14 @@ def bytes_to_unicode() -> dict[int, str]:
 
 
 class Vocabulary:
+    """Maps token ids to their real text representation."""
+
     def __init__(self, vocab_path: str, vocab_size: int) -> None:
+        """Load the vocabulary file and decode every token back to text.
+        Args:
+            vocab_path: the vocabulary file shipped with the model.
+            vocab_size: he number of ids the model can emit."""
+
         with open(vocab_path, encoding="utf-8") as handle:
             raw: dict[str, int] = json.load(handle)
 
@@ -37,7 +49,19 @@ class Vocabulary:
         self.size = vocab_size
 
     def text(self, token_id: int) -> str | None:
+        """Return the token text, or None when the id has no usable mapping.
+
+        Args:
+            token_id: the id to look up.
+        Returns:
+            The text the token produces, or None if it was skipped."""
+
         return self._id_to_text.get(token_id)
 
     def ids(self) -> list[int]:
+        """All token ids that have a usable text mapping.
+
+        Returns:
+            The ids the decoder is allowed to consider, in load order."""
+
         return list(self._id_to_text)

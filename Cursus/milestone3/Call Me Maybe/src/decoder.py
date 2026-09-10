@@ -10,12 +10,8 @@ MAX_TOKENS = 256
 
 
 def healable(text: str) -> bool:
-    """Return True if ``text`` sits inside a word rather than on a boundary.
+    """Return True if ``text`` sits inside a word rather than on a boundary."""
 
-    Healing is only worth doing where the forced text cut a word in half.
-    On a clean boundary, a quote or a space, the model already sees a prefix
-    it could have produced by itself.
-    """
     return bool(text) and all(char.isalnum() or char == "_" for char in text)
 
 
@@ -63,12 +59,25 @@ class Decoder:
         self.highest_id = int(self.token_ids.max())
         self.forwards = 0
 
-    def decode(self, prompt: str) -> str:
-        """Return the JSON call generated for ``prompt``.
+    def _fits(self, state: GrammarState, text: str, escaping: bool) -> str:
+        """Return the text to keep for ``text``,
+        empty if the grammar refuses."""
 
-        The result is guaranteed to parse and to match the schema of one of
-        the functions the grammar was built from.
-        """
+        if state.accepts(text):
+            return text
+        if not escaping:
+            return ""
+        if text.startswith(" ") and state.accepts(text[1:]):
+            return text[1:]
+        if '"' in text:
+            escaped = text.replace('"', '\\"')
+            if state.accepts(escaped):
+                return escaped
+        return ""
+
+    def decode(self, prompt: str) -> str:
+        """Return the JSON call generated for ``prompt``."""
+
         state = self.grammar.start()
         generated = ""
         steps = 0
@@ -92,19 +101,8 @@ class Decoder:
     def _split(
         self, prompt: str, generated: str, forced: bool
     ) -> Tuple[str, str]:
-        """Split the text into the part to encode and the part to re-decide.
+        """Split the text into the part to encode and the part to re-decide."""
 
-        The grammar writes every character it has no choice about, which
-        regularly stops in the middle of a word: all the function names share
-        ``fn_``, so that prefix is emitted without asking anyone.  The model is
-        then queried from a prefix it would never have produced, because ``fn``
-        and ``_`` are one token together with whatever follows, and its scores
-        there are worthless.
-
-        Backing up the last token puts the question back on a real token
-        boundary.  The characters given up are not lost: they become a
-        constraint every candidate has to match.
-        """
         text = prompt + generated
         if not forced:
             return text, ""
@@ -119,14 +117,11 @@ class Decoder:
     def _search(
         self, scores: np.ndarray, state: GrammarState, tail: str
     ) -> str:
-        """Return the best token extending ``tail`` that the grammar accepts.
+        """Return the best token extending ``tail``
+        that the grammar accepts."""
 
-        The highest scoring candidate is the greedy answer.  When another
-        token within ``margin`` of it merely extends that answer, the longer
-        one is taken instead: it commits to the same text but covers more
-        ground, which saves whole forward passes.
-        """
         candidates = self.token_ids[np.argsort(-scores[self.token_ids])]
+        escaping = state.in_string()
         best = ""
         ceiling = 0.0
         for token_id in candidates:
@@ -138,8 +133,10 @@ class Decoder:
             # them, otherwise it makes no progress.
             if not piece.startswith(tail) or len(piece) == len(tail):
                 continue
-            if not state.accepts(piece[len(tail):]):
+            text = self._fits(state, piece[len(tail):], escaping)
+            if not text:
                 continue
+            piece = tail + text
             if not best:
                 best, ceiling = piece, score
             elif len(piece) > len(best) and piece.startswith(best):
@@ -151,6 +148,7 @@ class Decoder:
         forced: bool = False,
     ) -> str:
         """Return the text to append at this position."""
+
         head, tail = self._split(prompt, generated, forced)
 
         self.forwards += 1

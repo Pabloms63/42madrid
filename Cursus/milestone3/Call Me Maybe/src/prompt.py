@@ -1,16 +1,3 @@
-"""Build the text sent to the model before constrained decoding starts.
-
-The prompt is not what makes the output valid JSON: the grammar does that.
-Its only job is to give the model what it needs to make two decisions well,
-which function fits the request and which values the arguments take.  So it
-lists the callable functions, then the request, and stops right where the JSON
-call begins.
-
-Every token of the prompt is re-encoded on every forward pass, and there is
-one forward pass per generated token, so the prompt is kept as short as it can
-be without hurting accuracy.
-"""
-
 from typing import Sequence, Set
 
 from .models import FunctionDefinition
