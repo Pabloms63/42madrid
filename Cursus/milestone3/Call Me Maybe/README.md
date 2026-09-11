@@ -237,7 +237,7 @@ On top of that, `flake8` and `mypy` with `make lint`.
   template and the thinking block.
 - The documentation of `outlines` and of GBNF in `llama.cpp`, read only to
   understand the problem. I do not use either of them.
-- [The bytes_to_unicode concept](https://huggingface.co/learn/llm-course/es/chapter6/5).
+- [The bytes_to_unicode concept](https://huggingface.co/learn/llm-course/es/chapter6/5), tabla estándar BPE.
 
 ### Use of AI
 
