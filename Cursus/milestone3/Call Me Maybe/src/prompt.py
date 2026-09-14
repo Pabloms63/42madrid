@@ -29,6 +29,7 @@ def ambiguous(functions: Sequence[FunctionDefinition]) -> Set[str]:
     evidence the shared prefix gives it.  Those names keep their description;
     the rest are clear enough on their own.
     """
+
     names = [function.name for function in functions]
     return {
         name
@@ -40,6 +41,7 @@ def ambiguous(functions: Sequence[FunctionDefinition]) -> Set[str]:
 
 def describe(function: FunctionDefinition, verbose: bool) -> str:
     """Render one function as a signature, with its description if needed."""
+
     arguments = ", ".join(
         "%s: %s" % (name, param.type)
         for name, param in function.parameters.items()
@@ -52,6 +54,7 @@ def describe(function: FunctionDefinition, verbose: bool) -> str:
 
 def catalogue(functions: Sequence[FunctionDefinition]) -> str:
     """Render every available function, one line each."""
+
     unclear = ambiguous(functions)
     return "\n".join(
         describe(function, function.name in unclear) for function in functions

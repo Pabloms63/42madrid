@@ -15,19 +15,31 @@ class GrammarError(Exception):
 
 
 class ValueAutomaton:
+    """Interface every JSON value recogniser implements."""
+
     initial: str = ""
 
     def step(self, state: str, char: str) -> List[str]:
+        """Return the states reachable from ``state`` by reading ``char``.
+
+        An empty list means the character is rejected."""
+
         raise NotImplementedError
 
     def is_final(self, state: str) -> bool:
+        """Return True if the value could legally end in ``state``."""
+
         raise NotImplementedError
 
     def next_chars(self, state: str) -> Optional[Set[str]]:
+        """Return the characters accepted in ``state``, None if unbounded."""
+
         raise NotImplementedError
 
 
 class NumberAutomaton(ValueAutomaton):
+    """Recognise a JSON number: sign, digits, fraction and exponent."""
+
     initial = "start"
     ALPHABET = "-+.eE0123456789"
     FINAL = frozenset({"zero", "integer", "fraction", "exponent_digit"})
@@ -86,6 +98,8 @@ class NumberAutomaton(ValueAutomaton):
 
 
 class IntegerAutomaton(NumberAutomaton):
+    """Recognise a JSON number with no fraction or exponent."""
+
     ALPHABET = "-0123456789"
     FINAL = frozenset({"zero", "integer"})
 
@@ -143,6 +157,8 @@ class StringAutomaton(ValueAutomaton):
 
 
 class BooleanAutomaton(ValueAutomaton):
+    """Recognise ``true`` or ``false`` one character at a time."""
+
     initial = ""
     WORDS = ("true", "false")
 
@@ -174,8 +190,20 @@ Part = Union[str, ValueAutomaton]
 
 
 class Grammar:
+    """Hold one template per function and walk them in parallel.
+
+    A template alternates literal text, which is known in advance, with
+    automata for the values, which are not."""
 
     def __init__(self, functions: Sequence[FunctionDefinition]) -> None:
+        """Build a template for every function.
+
+        Args:
+            functions: the definitions to accept.
+
+        Raises:
+            GrammarError: if the list is empty or a name is duplicated."""
+
         if not functions:
             raise GrammarError(
                 "no function definition to build a grammar from"
@@ -191,6 +219,14 @@ class Grammar:
             self.templates.append(self._template(function))
 
     def _template(self, function: FunctionDefinition) -> List[Part]:
+        """Turn one definition into alternating text and automata.
+
+        Punctuation and key names are accumulated in a buffer and flushed
+        as a single part whenever a value automaton has to be inserted.
+
+        Raises:
+            GrammarError: if a parameter type has no automaton."""
+
         parts: List[Part] = []
         buffer = '{"name": %s, "parameters": {' % json.dumps(function.name)
         for index, (key, param) in enumerate(function.parameters.items()):
@@ -211,12 +247,20 @@ class Grammar:
         return parts
 
     def start(self) -> "GrammarState":
+        """Return a state sitting at the beginning of every template."""
+
         cursors = tuple(
             self.at(index, 0) for index in range(len(self.templates))
             )
         return GrammarState(self, cursors)
 
     def at(self, template: int, part: int) -> Cursor:
+        """Return a cursor placed at the start of ``part``.
+
+        Args:
+            template: index of the template.
+            part: index of the part within it, possibly past the end."""
+
         parts = self.templates[template]
         if part >= len(parts):
             return (template, len(parts), 0)
@@ -226,9 +270,13 @@ class Grammar:
         return (template, part, chunk.initial)
 
     def is_done(self, cursor: Cursor) -> bool:
+        """Return True if the cursor has run past the last part."""
+
         return cursor[1] >= len(self.templates[cursor[0]])
 
     def step(self, cursor: Cursor, char: str) -> List[Cursor]:
+        """Return the cursors reachable from ``cursor`` by reading ``char``."""
+
         template, part, position = cursor
         parts = self.templates[template]
         if part >= len(parts):
@@ -250,6 +298,8 @@ class Grammar:
         return reachable
 
     def chars(self, cursor: Cursor) -> Optional[Set[str]]:
+        """Return the characters accepted at ``cursor``, None if unbounded."""
+
         template, part, position = cursor
         parts = self.templates[template]
         if part >= len(parts):
@@ -268,8 +318,14 @@ class Grammar:
 
 
 class GrammarState:
+    """A position in every template that is still alive.
+
+    Templates are explored in parallel: the function name is only settled
+    once the text rules the other candidates out."""
 
     def __init__(self, grammar: Grammar, cursors: Tuple[Cursor, ...]) -> None:
+        """Store the grammar and the cursors still viable."""
+
         self.grammar = grammar
         self.cursors = cursors
 
@@ -286,18 +342,29 @@ class GrammarState:
         return False
 
     def is_complete(self) -> bool:
+        """Return True if any cursor has reached the end of its template."""
+
         return any(self.grammar.is_done(cursor) for cursor in self.cursors)
 
     def accepts(self, piece: str) -> bool:
+        """Return True if ``piece`` can be appended without breaking out."""
+
         return bool(self._consume(piece))
 
     def advance(self, text: str) -> "GrammarState":
+        """Return the state reached after reading ``text``.
+
+        Raises:
+            GrammarError: if no template survives the text."""
+
         cursors = self._consume(text)
         if not cursors:
             raise GrammarError("the grammar rejects %r" % text)
         return GrammarState(self.grammar, cursors)
 
     def forced_text(self) -> str:
+        """Return the characters that are the only ones possible from here."""
+
         pieces: List[str] = []
         cursors = self.cursors
         while not any(self.grammar.is_done(cursor) for cursor in cursors):
@@ -310,6 +377,8 @@ class GrammarState:
         return "".join(pieces)
 
     def _possible(self, cursors: Tuple[Cursor, ...]) -> Optional[Set[str]]:
+        """Return the characters any cursor accepts, None if unbounded."""
+
         allowed: Set[str] = set()
         for cursor in cursors:
             chars = self.grammar.chars(cursor)
@@ -323,6 +392,8 @@ class GrammarState:
     def _advance(
             self, cursors: Tuple[Cursor, ...], char: str
             ) -> Tuple[Cursor, ...]:
+        """Return the cursors reachable by reading ``char``, deduplicated."""
+
         reached: Dict[Cursor, None] = {}
         for cursor in cursors:
             for nxt in self.grammar.step(cursor, char):
@@ -330,6 +401,8 @@ class GrammarState:
         return tuple(reached)
 
     def _consume(self, text: str) -> Tuple[Cursor, ...]:
+        """Return the cursors left after reading `text`, empty if rejected."""
+
         cursors = self.cursors
         for char in text:
             cursors = self._advance(cursors, char)

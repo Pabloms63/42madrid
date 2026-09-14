@@ -14,6 +14,7 @@ from .prompt import build_prompt
 
 def parse_args() -> argparse.Namespace:
     """Read the command line arguments."""
+
     parser = argparse.ArgumentParser(prog="src")
     parser.add_argument(
         "--functions_definition",
@@ -47,6 +48,7 @@ def run(
     requests: Sequence[str],
 ) -> List[FunctionCall]:
     """Decode every request, reporting the ones that fail without stopping."""
+
     calls: List[FunctionCall] = []
     for index, request in enumerate(requests, start=1):
         try:
@@ -62,6 +64,7 @@ def run(
 
 def main() -> int:
     """Run the whole pipeline and return the process exit code."""
+
     args = parse_args()
     try:
         functions = load_functions(args.functions_definition)

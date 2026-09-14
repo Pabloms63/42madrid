@@ -13,6 +13,20 @@ def parse_call(
     text: str,
     functions: Sequence[FunctionDefinition],
 ) -> FunctionCall:
+    """Turn the generated text into a call the output file can hold.
+    Args:
+        prompt: the request that produced the text, copied into the result.
+        text: the JSON the decoder generated.
+        functions: the definitions to validate against.
+
+    Returns:
+        A validated call, with its parameters in definition order.
+
+    Raises:
+        ParserError: if the text is not an object holding a known function
+            name and exactly the parameters it declares, each of the
+            declared type."""
+
     try:
         payload = json.loads(text)
     except json.JSONDecodeError as err:
@@ -52,6 +66,14 @@ def parse_call(
 
 
 def _matches(value: object, expected: str) -> bool:
+    """Return True if ``value`` has the type the definition declares.
+    Args:
+        value: the value the model produced.
+        expected: the type name taken from the definition.
+
+    Returns:
+        Whether the value may be used for that parameter."""
+
     if expected == "number":
         return isinstance(value, (int, float)) and not isinstance(value, bool)
     if expected == "integer":
@@ -62,6 +84,15 @@ def _matches(value: object, expected: str) -> bool:
 
 
 def _coerce(value: object, expected: str) -> object:
+    """Give the value the representation the schema implies.
+    Args:
+        value: the value the model produced.
+        expected: the type name taken from the definition.
+
+    Returns:
+        The value as a float when the parameter is a number, unchanged
+        otherwise."""
+
     if expected == "number" and isinstance(value, int) \
             and not isinstance(value, bool):
         return float(value)
