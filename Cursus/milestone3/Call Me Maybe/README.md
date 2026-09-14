@@ -253,7 +253,7 @@ were written with AI assistance. I read through both, traced them against the
 test cases in `test_grammar.py`, and can explain every design decision in them —
 see the sections above.
 
-
+### Notas
 //para ver vocab.json
 uv run python -c "from llm_sdk import Small_LLM_Model; Small_LLM_Model('Qwen/Qwen3-0.6B'); print('ok')"
 
