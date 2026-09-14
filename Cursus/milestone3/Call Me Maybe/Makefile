@@ -1,10 +1,20 @@
-.PHONY: install run debug clean lint lint-strict
+.PHONY: install run debug clean lint lint-strict test bench inspect check
 
 install:
 	uv sync
 
 run:
 	uv run python -m src
+
+test:
+	uv run python -m tests.test_grammar
+	uv run python -m tests.test_real_data
+
+bench:
+	uv run python bench.py
+
+inspect:
+	uv run python debug.py
 
 debug:
 	uv run python -m pdb -m src
@@ -20,3 +30,5 @@ lint:
 lint-strict:
 	uv run flake8 .
 	uv run mypy . --strict
+
+check: lint test
