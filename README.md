@@ -75,12 +75,13 @@ Dentro de Cursus se encuentran estos contenidos:
 1. 😠 Exam Rank 03: ✅
     Examen propio del milestone 3. (Python)
 
-2. 🧵 Codexion: ✅
-    Simulación concurrente en C donde varios programadores compiten por un número limitado de dongles (USBs) utilizando hilos POSIX, mutexes y técnicas de sincronización de recursos.
+2. 🧵 Codexion (C): ✅
+    Simulación concurrente donde varios programadores compiten por un número limitado de dongles (USBs) utilizando hilos POSIX, mutexes y técnicas de sincronización de recursos.
 
-3. 🤖 Call Me Maybe: 🔄
+3. 🤖 Call Me Maybe (Python): ✅
    Implementa Function Calling sobre un LLM pequeño sin confiar en que el modelo genere un JSON correcto. En vez de generar libre y validar después, se fuerza la validez token a token con decodificación restringida.
 
-5. 🚁 Fly-In: 🔄
+5. 🚁 Fly-In (Python): 🔄
+   
 
 🚧🚧🚧🚧🚧🚧🚧🚧🚧🚧🚧🚧🚧🚧 -- Futuras actualizaciones...
