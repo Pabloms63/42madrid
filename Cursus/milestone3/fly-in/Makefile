@@ -1,16 +1,13 @@
-.PHONY: install run debug clean lint lint-strict
-
-# python3 -m venv .venv
-# source .venv/bin/activate
-
 PYTHON	= python3
-MAP		?= maps/easy/01_linear_path.txt
+MAP		?= maps/example.txt
 MYPY_FLAGS	= --warn-return-any --warn-unused-ignores \
 		  --ignore-missing-imports --disallow-untyped-defs \
 		  --check-untyped-defs
 
+.PHONY: install run visual gui debug clean lint lint-strict
+
 install:
-	$(PYTHON) -m pip install flake8 mypy
+	$(PYTHON) -m pip install flake8 mypy pygame
 
 run:
 	$(PYTHON) main.py $(MAP)
@@ -28,3 +25,9 @@ lint:
 lint-strict:
 	$(PYTHON) -m flake8 . --exclude=.venv
 	$(PYTHON) -m mypy . --exclude '^\.venv/' --strict
+
+visual:
+	$(PYTHON) main.py --visual $(MAP)
+
+gui:
+	$(PYTHON) main.py --gui $(MAP)
