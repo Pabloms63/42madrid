@@ -27,29 +27,29 @@ Dentro de Cursus se encuentran estos contenidos:
 ---
 
 # Milestone0
-1. 📚 Libft: ✅
-   Este proyecto consiste en relizar una librería con muchas de las clases que utilizaremos durante el CURSUS. (C)
+1. 📚 Libft (C): ✅
+   Este proyecto consiste en relizar una librería con muchas de las clases que utilizaremos durante el CURSUS.
 
 ---
 
 # Milestone1
-1. 💻 Born2beroot: ✅
-   En este proyecto nos da las nociones básicas para descubrir el mundo de la adminsitración y seguridad de sistemas.
+1. 💻 Born2beroot (Terminal LINUX): ✅
+   Este proyecto nos da las nociones básicas para descubrir el mundo de la adminsitración y seguridad de sistemas.
 
-2. 🖨️ Printf: ✅
-   Nos permite tener nuestra propia función para imprimir por pantalla cualquier tipo de dato. (C)
+2. 🖨️ Printf (C): ✅
+   Nos permite tener nuestra propia función para imprimir por pantalla cualquier tipo de dato.
 
-3. 📜 Get_Next_Line: ✅
-   Proyecto que nos permite imprimir linea por linea de un texto teniendo cuenta el Buffer_size. (C)
+3. 📜 Get_Next_Line (C): ✅
+   Proyecto que nos permite imprimir linea por linea de un texto teniendo cuenta el Buffer_size.
 
 ---
 
 # MIlestone2
-1. 🗃️ Push_swap: ✅
-   Proyecto que nos permite reordenar datos de forma controlada mediante operaciones simples. (C)
+1. 🗃️ Push_swap (C): ✅
+   Proyecto que nos permite reordenar datos de forma controlada mediante operaciones simples.
 
-2. 😈 Examen Rank 2: ✅
-   Examen de 4 niveles propio del milestone2. (C)
+2. 😈 Examen Rank 2 (C): ✅
+   Examen de 4 niveles propio del milestone2.
 
 3. 🐍 Módulos de Python: ✅
    - Module00: Introducción a la programación en Python.
@@ -65,9 +65,8 @@ Dentro de Cursus se encuentran estos contenidos:
    - Module09: Libreria pydantic para la validación de datos.
    - Module10: Higher order functions, decoradores y lambdas.
 
-4. 🧩 A-Maze-Ing: ✅
-   Proyecto en Python que genera laberintos de forma algorítmica, calcula el camino más corto hasta la salida
-   mediante algoritmos de pathfinding y lo representa visualmente en tiempo real. (Python)
+4. 🧩 A-Maze-Ing (Python): ✅
+   Genera laberintos de forma algorítmica, calcula el camino más corto hasta la salida mediante algoritmos de pathfinding y lo representa visualmente en tiempo real.
 
 ---
 
