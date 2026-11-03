@@ -20,8 +20,8 @@ Dentro de Cursus se encuentran estos contenidos:
 1. Milestone0 ✅
 2. Milestone1 ✅
 3. Milestone2 ✅
-4. Milestone3 🔄
-5. MIlestone4
+4. Milestone3 ✅
+5. MIlestone4 🔄
 6. Milestone5
 
 ---
@@ -71,8 +71,8 @@ Dentro de Cursus se encuentran estos contenidos:
 ---
 
 # MIlestone3
-1. 😠 Exam Rank 03: ✅
-    Examen propio del milestone 3. (Python)
+1. 😠 Exam Rank 03 (Python): ✅
+    Examen propio del milestone 3.
 
 2. 🧵 Codexion (C): ✅
     Simulación concurrente donde varios coders (programadores) compiten por un número limitado de dongles (USBs) utilizando hilos POSIX, mutexes y técnicas de sincronización de recursos.
@@ -80,8 +80,14 @@ Dentro de Cursus se encuentran estos contenidos:
 3. 🤖 Call Me Maybe (Python): ✅
    Implementa Function Calling sobre un LLM pequeño sin confiar en que el modelo genere un JSON correcto. En vez de generar libre y validar después, se fuerza la validez token a token con decodificación restringida.
 
-5. 🚁 Fly-In (Python): 🔄
+5. 🚁 Fly-In (Python): ✅
    Gestiona la ruta de una flota de drones desde el punto de inicio hasta el punto final a través de una red de zonas conectadas, en el mínimo número de turnos posibles.
    
+---
+
+# MIlestone4
+1. Exam Rank 04 (Python): 🔄
+   Examen propio del milestone 4.
+
 
 🚧🚧🚧🚧🚧🚧🚧🚧🚧🚧🚧🚧🚧🚧 -- Futuras actualizaciones...
